@@ -1,0 +1,66 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  max-width: 280px;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1a1a1a;
+}
+
+.card p {
+  margin: 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.precio {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.estado {
+  font-size: 0.85rem;
+}
+
+.estado.disponible {
+  color: #2e7d32;
+}
+
+.estado.no-disponible {
+  color: #c62828;
+}
+
+.card button {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.card button:hover {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.card button.agregar {
+  border-color: #2e7d32;
+  color: #2e7d32;
+}
+
+.card button.agregar:hover {
+  background: #2e7d32;
+  color: #fff;
+}

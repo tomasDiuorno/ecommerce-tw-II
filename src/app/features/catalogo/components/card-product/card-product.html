@@ -1,0 +1,16 @@
+<div class="card">
+  <h3>{{ producto.nombre }}</h3>
+  <p>{{ producto.descripcion }}</p>
+  <p>{{ producto.precio }}</p>
+  <p>{{ producto.clasificacion }}</p>
+
+  @if (producto.disponible) {
+    <span class="estado disponible">✅ Disponible</span>
+  } @else {
+    <span class="estado no-disponible">❌ No disponible</span>
+  }
+
+  <button class="agregar" (click)="onAgregarAlCarrito()">
+    {{ producto.disponible ? 'Agregar al carrito' : 'No disponible' }}
+  </button>
+</div>

@@ -1,0 +1,14 @@
+<h2>Carrito de Compras</h2>
+@for (p of carritoService.productos(); track p.id) {
+    <div class="item-carrito">
+        <p>{{ p.nombre }} - ${{ p.precio }}</p>
+        <button (click)="carritoService.eliminarProducto(p)">Eliminar</button>
+    </div>
+}@empty {
+    <p class="carrito-vacio">No hay productos en el carrito.</p>
+}
+<div class="resumen">
+    <span>Total:</span>
+    <span>${{ carritoService.total() }}</span>
+</div>
+<button class="vaciar" (click)="carritoService.vaciarCarrito()">Vaciar Carrito</button>
