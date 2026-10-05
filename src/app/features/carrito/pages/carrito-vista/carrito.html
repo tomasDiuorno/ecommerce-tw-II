@@ -1,14 +1,60 @@
-<h2>Carrito de Compras</h2>
-@for (p of carritoService.productos(); track p.id) {
-    <div class="item-carrito">
-        <p>{{ p.nombre }} - ${{ p.precio }}</p>
-        <button (click)="carritoService.eliminarProducto(p)">Eliminar</button>
+<div class="flex flex-col md:flex-row py-16 max-w-6xl w-full px-6 mx-auto">
+    <div class="flex-1 min-w-0 max-w-4xl">
+        <h1 class="text-3xl font-medium mb-6">
+            Shopping Cart
+            <span class="text-sm text-indigo-500">{{ carritoService.cantidad() }} {{ carritoService.cantidad() > 1 ? 'Items' : 'Item'}}</span>
+        </h1>
+
+        <div class="grid grid-cols-[2fr_1fr_1fr] text-gray-500 text-base font-medium pb-3">
+            <p class="text-left">Product Details</p>
+            <p class="text-center">Subtotal</p>
+            <p class="text-center">Action</p>
+        </div>
+
+        @for (item of carritoService.productos(); track item.producto.id) {
+            <app-carrito-item
+                class="block"
+                [item]="item"
+            ></app-carrito-item>
+        } @empty {
+            <p class="py-6 text-gray-500">
+                No hay productos en el carrito.
+            </p>
+        }
+
+
+
+        <button
+            type="button"
+            class="mt-3 text-sm text-indigo-500 hover:underline cursor-pointer"
+            (click)="carritoService.vaciarCarrito()"
+        >
+            Vaciar Carrito
+        </button>
+
+        <button
+            type="button"
+            class="flex items-center mt-8 gap-2 text-indigo-500 font-medium cursor-pointer"
+        >
+            <svg
+                width="15"
+                height="11"
+                viewBox="0 0 15 11"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+            >
+                <path
+                    d="M14.09 5.5H1M6.143 10 1 5.5 6.143 1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
+            Continue Shopping
+        </button>
     </div>
-}@empty {
-    <p class="carrito-vacio">No hay productos en el carrito.</p>
-}
-<div class="resumen">
-    <span>Total:</span>
-    <span>${{ carritoService.total() }}</span>
+
+    <app-carrito-resumen class="contents" [totalProductos]="carritoService.totalProductos()" [envio]="carritoService.envio" [totalCompra]="carritoService.totalCompra"></app-carrito-resumen>
 </div>
-<button class="vaciar" (click)="carritoService.vaciarCarrito()">Vaciar Carrito</button>

@@ -1,27 +1,48 @@
-import { computed, Injectable, Service, signal } from '@angular/core';
-import { Productos } from '../../../models/productos';
+import { computed, Injectable, signal } from '@angular/core';
+import { Producto } from '../../../shared/models/producto';
+import { itemCarrito } from '../models/item-carrito';
 
 @Injectable({ providedIn: 'root' })
 export class CarritoService {
-  private items = signal<Productos[]>([]);
-
+  private items = signal<itemCarrito[]>([]);
+    
+  totalProductos = computed(() =>
+    this.items().reduce(
+      (suma, item) => suma + item.producto.precio * item.cantidad,
+      0
+    )
+  );
+  envio = 1000;
   productos = this.items.asReadonly();
+  totalCompra = this.totalProductos() + this.envio;
 
   cantidad = computed(() => this.items().length);
-  total = computed(() => this.items().reduce((suma, item) => suma + item.precio, 0));
+  
 
-  agregarProducto(producto: Productos) {
-    console.log('Agregando producto al carrito:', producto);
-    this.items.update((productos) => [...productos, producto]);
-    console.log('Carrito actualizado:', this.items());
+  agregarProducto(producto: Producto) {
+    const itemExistente = this.items().find(item => item.producto.id == producto.id)
+   if (itemExistente) {
+  this.items.update(items =>
+    items.map(item =>
+      item.producto.id === itemExistente.producto.id
+        ? { ...item, cantidad: item.cantidad + 1 }
+        : item
+    )
+  );
+} else {
+ this.items.update((items) => [...items, {producto, cantidad: 1}]);
+}
+console.log(this.items());
   }
   
-  eliminarProducto(producto: Productos) {
-    this.items.update((productos) => productos.filter((item) => item.id !== producto.id));
+  eliminarProducto(producto: Producto) {
+    this.items.update((productos) => productos.filter((item) => item.producto.id !== producto.id));
   }
 
   vaciarCarrito() {
     this.items.set([]);
   }
+
+
 
 }

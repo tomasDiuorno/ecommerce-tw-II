@@ -1,0 +1,64 @@
+<div class="max-w-[360px] w-full bg-gray-100/40 p-5 mt-16 md:mt-0 border border-gray-300/70">
+        <h2 class="text-xl font-medium">Order Summary</h2>
+
+        <hr class="border-gray-300 my-5" />
+
+        <div class="mb-6">
+            <p class="text-sm font-medium uppercase">
+                Delivery Address
+            </p>
+
+            <div class="relative flex justify-between items-start mt-2">
+                <p class="text-gray-500">No address found</p>
+
+                <button
+                    type="button"
+                    class="text-indigo-500 hover:underline cursor-pointer"
+                >
+                    Change
+                </button>
+            </div>
+
+            <label
+                for="payment-method"
+                class="block text-sm font-medium uppercase mt-6"
+            >
+                Payment Method
+            </label>
+
+            <select
+                id="payment-method"
+                class="w-full border border-gray-300 bg-white px-3 py-2 mt-2 focus:outline-indigo-500"
+            >
+                <option value="COD">Cash On Delivery</option>
+                <option value="Online">Online Payment</option>
+            </select>
+        </div>
+
+        <hr class="border-gray-300" />
+
+        <div class="text-gray-500 mt-4 space-y-2">
+            <p class="flex justify-between">
+                <span>Price</span>
+                <span>{{totalProductos | dinero}}</span>
+            </p>
+
+            <p class="flex justify-between">
+                <span>Shipping Fee</span>
+                <span>{{envio | dinero}}</span>
+            </p>
+
+        
+            <p class="flex justify-between text-lg font-medium mt-3">
+                <span>Total Amount:</span>
+                <span>{{totalCompra | dinero}}</span>
+            </p>
+        </div>
+
+        <button
+            type="button"
+            class="w-full py-3 mt-6 bg-indigo-500 text-white font-medium hover:bg-indigo-600 transition-colors cursor-pointer"
+        >
+            Place Order
+        </button>
+    </div>

@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { Productos } from '../../../../models/productos';
+import { Producto } from '../../../../shared/models/producto';
 import { CatalogoService } from '../../services/catalogo';
 import { CardProduct } from '../../components/card-product/card-product';
 import { CarritoService } from '../../../carrito/services/carrito';
@@ -11,7 +11,7 @@ import { CarritoService } from '../../../carrito/services/carrito';
   templateUrl: './lista-de-productos.html',
 })
 export class ListaDeProductos implements OnInit {
-  productos = signal<Productos[]>([])
+  productos = signal<Producto[]>([])
 
   constructor(
     private catalogo: CatalogoService,
@@ -24,7 +24,7 @@ export class ListaDeProductos implements OnInit {
     });
   }
 
-  onAgregarAlCarrito(producto: Productos) {
+  onAgregarAlCarrito(producto: Producto) {
     this.carrito.agregarProducto(producto);
   }
 

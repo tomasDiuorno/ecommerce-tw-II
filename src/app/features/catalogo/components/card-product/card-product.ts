@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Productos } from '../../../../models/productos';
+import { Producto } from '../../../../shared/models/producto';
 
 @Component({
   imports: [],
@@ -8,8 +8,8 @@ import { Productos } from '../../../../models/productos';
   templateUrl: './card-product.html',
 })
 export class CardProduct {
-  @Input() producto!: Productos;
-  @Output() agregarAlCarrito = new EventEmitter<Productos>();
+  @Input() producto!: Producto;
+  @Output() agregarAlCarrito = new EventEmitter<Producto>();
 
   onAgregarAlCarrito(){
     this.agregarAlCarrito.emit(this.producto);

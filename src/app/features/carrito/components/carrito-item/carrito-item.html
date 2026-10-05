@@ -1,0 +1,28 @@
+<div class="grid grid-cols-[2fr_1fr_1fr] text-gray-500 items-center text-sm md:text-base font-medium pt-3">
+                        <div class="flex items-center md:gap-6 gap-3">
+                            <div class="cursor-pointer w-24 h-24 flex items-center justify-center border border-gray-300 rounded overflow-hidden">
+                                <img class="max-w-full h-full object-cover" [src]="item.producto.imagen" [alt]="item.producto.nombre" />
+                            </div>
+                            <div>
+                                <p class="font-semibold">{{ item.producto.nombre }}</p>
+                                <div class="font-normal text-gray-500/70">
+                                    <p>Categoria: <span>{{ item.producto.categoria || "N/A"}}</span></p>
+                                </div>
+                                <div class="font-normal text-gray-500/70">
+                                    <p>Cantidad: <span>{{ item.cantidad || "N/A"}}</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-center">{{ item.producto.precio }}</p>
+                        <button class="cursor-pointer mx-auto">
+                              <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 20 20"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true">
+                                <path d="m12.5 7.5-5 5m0-5 5 5m5.833-2.5a8.333 8.333 0 1 1-16.667 0 8.333 8.333 0 0 1 16.667 0" stroke="#FF532E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+</div>
