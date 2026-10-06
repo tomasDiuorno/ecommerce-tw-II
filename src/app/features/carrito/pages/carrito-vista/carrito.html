@@ -6,16 +6,16 @@
         </h1>
 
         <div class="grid grid-cols-[2fr_1fr_1fr] text-gray-500 text-base font-medium pb-3">
-            <p class="text-left">Product Details</p>
+            <p class="text-left">Productos</p>
             <p class="text-center">Subtotal</p>
-            <p class="text-center">Action</p>
+            <p class="text-center">Acción</p>
         </div>
 
         @for (item of carritoService.productos(); track item.producto.id) {
             <app-carrito-item
                 class="block"
                 [item]="item"
-            ></app-carrito-item>
+            (eliminarProducto)="eliminarProducto($event)"></app-carrito-item>
         } @empty {
             <p class="py-6 text-gray-500">
                 No hay productos en el carrito.
@@ -32,8 +32,7 @@
             Vaciar Carrito
         </button>
 
-        <button
-            type="button"
+        <a routerLink="/" routerLinkActive="activo"
             class="flex items-center mt-8 gap-2 text-indigo-500 font-medium cursor-pointer"
         >
             <svg
@@ -52,9 +51,9 @@
                     stroke-linejoin="round"
                 />
             </svg>
-            Continue Shopping
-        </button>
+            Seguir comprando
+        </a>
     </div>
 
-    <app-carrito-resumen class="contents" [totalProductos]="carritoService.totalProductos()" [envio]="carritoService.envio" [totalCompra]="carritoService.totalCompra"></app-carrito-resumen>
+    <app-carrito-resumen class="contents" [totalProductos]="carritoService.totalProductos()" [envio]="carritoService.envio()" [totalCompra]="carritoService.totalCompra()"></app-carrito-resumen>
 </div>

@@ -13,8 +13,8 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="text-center">{{ item.producto.precio }}</p>
-                        <button class="cursor-pointer mx-auto">
+                        <p class="text-center">{{ subtotal() | dinero}}</p>
+                        <button (click)="onEliminarProducto()" class="cursor-pointer mx-auto">
                               <svg
                                 width="20"
                                 height="20"

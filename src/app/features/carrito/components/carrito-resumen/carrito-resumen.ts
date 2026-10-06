@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { NumberValueAccessor } from '@angular/forms';
+import { Component, Input, signal } from '@angular/core';
 import { DineroPipe } from '../../../../shared/pipes/dinero-pipe';
 
 @Component({
@@ -13,4 +12,16 @@ export class CarritoResumen {
   @Input() envio!: number;
   @Input() totalCompra!: number;
 
+
+  mostrarDireccion = signal(false);
+  DireccionSeleccionada = signal<string | null>(null); 
+
+  toggleDireccion() {
+    this.mostrarDireccion.update(estado => !estado);
+  }
+
+  seleccionarDireccion(direccion: string) {
+    this.DireccionSeleccionada.set(direccion);
+    this.mostrarDireccion.set(false);      
+  }
 }
