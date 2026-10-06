@@ -1,5 +1,4 @@
 import { Component, computed, EventEmitter, Input, Output } from '@angular/core';
-import { Producto } from '../../../../shared/models/producto';
 import { itemCarrito } from '../../models/item-carrito';
 import { DineroPipe } from '../../../../shared/pipes/dinero-pipe';
 

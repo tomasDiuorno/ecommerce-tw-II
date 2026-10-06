@@ -13,8 +13,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './carrito.html',
 })
 export class Carrito {
-  constructor(public carritoService: CarritoService) {
-  }
+  carritoService = inject(CarritoService);
 
   eliminarProducto(item: itemCarrito){
     this.carritoService.eliminarProducto(item);
