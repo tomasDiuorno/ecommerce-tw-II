@@ -8,12 +8,11 @@
                 Dirección de entrega
             </p>
 
-            <!-- Contenedor relativo de la dirección -->
+            
         <div class="relative flex justify-between items-start mt-2">
             <p class="text-gray-500">
-                <!-- Mostramos la dirección elegida o el mensaje por defecto -->
-                @if (DireccionSeleccionada()) {
-                    {{ DireccionSeleccionada() }}
+                @if (direccionSeleccionada()) {
+                    {{ direccionSeleccionada() }}
                 } @else {
                     No se encontró dirección
                 }
@@ -22,28 +21,43 @@
             <button
                 type="button"
                 (click)="toggleDireccion()"
-                class="text-indigo-500 hover:underline cursor-pointer"
-            >
+                class="text-indigo-500 hover:underline cursor-pointer">
                 Cambiar
             </button>
 
             <!-- Menú desplegable -->
-            @if (mostrarDireccion()) {
-                <div class="absolute top-full mt-1 right-0 py-1 bg-white border border-gray-300 text-sm w-full z-10 shadow-md">
-                    <!-- Opción de prueba (ej. CABA/GBA) -->
-                    <p 
-                        (click)="seleccionarDireccion('Buenos Aires, CABA')" 
-                        class="text-gray-500 p-2 hover:bg-gray-100 cursor-pointer transition-colors">
-                        Buenos Aires, CABA
-                    </p>
+             @if (mostrarDireccion()) {
+                <div class="absolute top-full mt-2 left-0 w-full bg-white border border-gray-300 shadow-lg z-20">
                     
-                    <hr class="border-gray-200">
-                    
-                    <p 
-                        (click)="toggleDireccion()" 
-                        class="text-indigo-500 text-center cursor-pointer p-2 hover:bg-indigo-500/10 transition-colors">
-                        + Agregar dirección
-                    </p>
+                    <!-- Input con FormControl -->
+                    <div class="p-2 border-b border-gray-200">
+                        <input 
+                            type="text" 
+                            [formControl]="buscadorControl"
+                            placeholder="Buscar calle, barrio..." 
+                            class="w-full px-3 py-2 border border-gray-300 focus:outline-indigo-500 text-sm"
+                            autofocus
+                        >
+                    </div>
+
+                    <!-- Lista de Resultados -->
+                    <ul class="max-h-48 overflow-y-auto">
+                        @for (resultado of resultadoBusqueda(); track resultado.id) {
+                            <li 
+                                (click)="seleccionarDireccion(resultado.direccion)"
+                                class="p-3 text-sm text-gray-600 hover:bg-indigo-50 cursor-pointer border-b border-gray-100 last:border-0"
+                            >
+                                {{ resultado.direccion }}
+                            </li>
+                        } @empty {
+                            <!-- Mensaje si está buscando o no hay resultados -->
+                            @if (buscadorControl.value?.length! > 2) {
+                                <li class="p-3 text-sm text-center text-gray-400">
+                                    Buscando direcciones...
+                                </li>
+                            }
+                        }
+                    </ul>
                 </div>
             }
         </div>
@@ -69,18 +83,18 @@
         <div class="text-gray-500 mt-4 space-y-2">
             <p class="flex justify-between">
                 <span>Precio</span>
-                <span>{{totalProductos | dinero}}</span>
+                <span>{{totalProductos() | dinero}}</span>
             </p>
 
             <p class="flex justify-between">
                 <span>Costo de envío</span>
-                <span>{{envio | dinero}}</span>
+                <span>{{envio() | dinero}}</span>
             </p>
 
         
             <p class="flex justify-between text-lg font-medium mt-3">
                 <span>Total:</span>
-                <span>{{totalCompra | dinero}}</span>
+                <span>{{totalCompra() | dinero}}</span>
             </p>
         </div>
 

@@ -55,5 +55,14 @@
         </a>
     </div>
 
-    <app-carrito-resumen class="contents" [totalProductos]="carritoService.totalProductos()" [envio]="carritoService.envio()" [totalCompra]="carritoService.totalCompra()"></app-carrito-resumen>
+    <app-carrito-resumen class="contents" 
+    [totalProductos]="carritoService.totalProductos()" 
+    [envio]="carritoService.envio()" 
+    [totalCompra]="carritoService.totalCompra()"
+    [resultadoBusqueda]="resultadosActuales()"
+    [direccionSeleccionada]="direccionElegida()"
+    (direccionSeleccionadaChange)="guardarDireccion($event)"
+    (direccionABuscar)="buscarDireccion($event)"
+    
+    ></app-carrito-resumen>
 </div>

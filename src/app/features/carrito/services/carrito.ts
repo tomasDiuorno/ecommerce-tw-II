@@ -15,9 +15,9 @@ export class CarritoService {
   envio = signal(1000);
   productos = this.items.asReadonly();
   totalCompra = computed(() => this.totalProductos() + this.envio());
-
-  cantidad = computed(() => this.items().length);
-
+  cantidad = computed(() =>
+  this.items().reduce((suma, item) => suma + item.cantidad, 0));
+  direccion = signal<string | null>(null);
 
   agregarProducto(producto: Producto) {
     const itemExistente = this.items().find(item => item.producto.id == producto.id)
@@ -56,9 +56,16 @@ export class CarritoService {
     )
   }
   
+  establecerDireccion(direccion: string){
+    this.direccion.set(direccion);
+  }
 
 
 vaciarCarrito() {
   this.items.set([]);
 }
+}
+
+function foreach(arg0: boolean): any {
+  throw new Error('Function not implemented.');
 }
