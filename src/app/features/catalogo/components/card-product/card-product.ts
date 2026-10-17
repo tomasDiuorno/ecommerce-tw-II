@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { Producto } from '../../../../shared/models/producto';
 
 @Component({
@@ -8,10 +8,10 @@ import { Producto } from '../../../../shared/models/producto';
   templateUrl: './card-product.html',
 })
 export class CardProduct {
-  @Input() producto!: Producto;
-  @Output() agregarAlCarrito = new EventEmitter<Producto>();
+  readonly producto = input.required<Producto>();
+readonly agregarAlCarrito = output<Producto>();
 
   onAgregarAlCarrito(){
-    this.agregarAlCarrito.emit(this.producto);
+    this.agregarAlCarrito.emit(this.producto());
   }
 }
