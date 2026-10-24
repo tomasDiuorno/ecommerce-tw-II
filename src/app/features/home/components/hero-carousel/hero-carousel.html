@@ -1,0 +1,97 @@
+<section
+  aria-roledescription="carousel"
+  aria-label="Destacados"
+  class="relative w-full overflow-hidden border-b border-gray-300"
+>
+  <!-- Flecha anterior -->
+  <button
+    type="button"
+    aria-label="Anterior"
+    (click)="anterior()"
+    class="absolute left-2 top-1/2 z-20 grid size-9 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-gray-300 bg-white text-gray-700 shadow-sm transition hover:border-indigo-500 hover:text-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 md:left-4"
+  >
+    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m15 5-7 7 7 7" />
+    </svg>
+  </button>
+
+  <div class="w-full overflow-hidden">
+    <div
+      class="flex w-full transition-transform duration-500 ease-in-out motion-reduce:transition-none [transform:translateX(calc(var(--index)*-100%))]"
+      [style.--index]="indice()"
+    >
+      @for (slide of slides(); track slide.id; let i = $index) {
+        <article
+  role="group"
+  aria-roledescription="slide"
+  [attr.aria-label]="(i + 1) + ' de ' + slides().length"
+  [attr.aria-hidden]="i !== indice()"
+  [attr.inert]="i !== indice() ? '' : null"
+  class="relative flex min-h-[360px] flex-[0_0_100%] items-center overflow-hidden md:aspect-[3/1] md:min-h-[340px]"
+>
+  <!-- Imagen: ocupa todo el slide -->
+  <img
+    [ngSrc]="slide.imagen"
+    [alt]="slide.alt"
+    fill
+    sizes="100vw"
+    [priority]="i === 0"
+    class="object-cover object-right"
+  />
+
+  
+
+          <!-- Contenido -->
+          <div class="fuente-hero relative z-10 w-full px-6 py-10 text-center md:px-16 md:text-left lg:px-24 xl:px-32">
+  <div class="mx-auto max-w-sm rounded-2xl bg-white/85 p-5 md:mx-0 md:max-w-[560px] md:rounded-none md:bg-transparent md:p-0 xl:max-w-[680px]">
+
+    <!-- Subtítulo -->
+    <p class="mb-4 inline-flex items-center gap-3 font-display text-xs font-semibold uppercase tracking-[0.25em] text-indigo-600 md:text-sm">
+      <span class="hidden h-0.5 w-8 bg-indigo-500 md:block" aria-hidden="true"></span>
+      {{ slide.subtitulo }}
+    </p>
+
+    <!-- Título -->
+    <h2 class="mb-5 font-display text-3xl font-bold uppercase italic leading-[0.95] tracking-tight text-gray-900 md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl">
+      {{ slide.titulo }}
+     <span class="block bg-gradient-to-r from-indigo-600 to-violet-500 bg-clip-text pr-2 text-transparent">
+
+        {{ slide.tituloResaltado }}
+      </span>
+    </h2>
+
+    <!-- Descripción -->
+    <p class="mx-auto mb-8 max-w-md text-base font-medium leading-relaxed text-gray-700 md:mx-0 md:text-lg">
+      {{ slide.descripcion }}
+    </p>
+
+    <!-- Botón -->
+    <a
+      [routerLink]="slide.enlace"
+      class="group inline-flex items-center gap-3 rounded-md bg-indigo-600 px-8 py-3.5 font-display text-sm font-semibold uppercase tracking-wider text-white shadow-lg shadow-indigo-500/30 transition hover:bg-indigo-700 hover:shadow-indigo-500/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+    >
+      {{ slide.boton }}
+      <svg class="size-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14m-6-6 6 6-6 6" />
+      </svg>
+    </a>
+  </div>
+</div>
+
+        </article>
+      }
+    </div>
+  </div>
+
+  <!-- Flecha siguiente -->
+  <button
+    type="button"
+    aria-label="Siguiente"
+    (click)="siguiente()"
+    class="absolute right-2 top-1/2 z-20 grid size-9 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-gray-300 bg-white text-gray-700 shadow-sm transition hover:border-indigo-500 hover:text-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 md:right-4"
+  >
+    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m9 5 7 7-7 7" />
+    </svg>
+  </button>
+</section>
