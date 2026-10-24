@@ -10,32 +10,19 @@ import { CarritoService } from '../../../carrito/services/carrito';
   styleUrl: './lista-de-productos.css',
   templateUrl: './lista-de-productos.html',
 })
-export class ListaDeProductos implements OnInit {
-  productos = signal<Producto[]>([])
+export class ListaDeProductos {
 
-  constructor(
-    private catalogo: CatalogoService,
-    private carrito: CarritoService
-  ) {}
+  private readonly catalogo = inject(CatalogoService);
+  private readonly carrito = inject(CarritoService);
 
-  ngOnInit(): void {
-    this.catalogo.getProductos().subscribe(products => {
-      this.productos.set(products);
-    });
-  }
+  productos = this.catalogo.products;
+
 
   onAgregarAlCarrito(producto: Producto) {
     this.carrito.agregarProducto(producto);
   }
 
   onToggleDisponible(productId: number) {
-    this.productos.update(products => {
-      return products.map(p => {
-        if (p.id === productId) {
-          return { ...p, disponible: !p.disponible };
-        }
-        return p;
-      });
-    });
+    this.catalogo.alternarDisponibilidad(productId);
   }
 }
