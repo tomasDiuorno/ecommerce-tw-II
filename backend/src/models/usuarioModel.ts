@@ -7,6 +7,7 @@ export interface Usuario{
     contrasenia: string;
     nombre: string;
     apellido: string;
+    direccion: string;
 }
 
 const RUTA = path.join(import.meta.dirname, "../../data/usuarios.json");

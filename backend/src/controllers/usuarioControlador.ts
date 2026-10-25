@@ -9,7 +9,7 @@ export function obtenerUsuarios(req: Request, res: Response) {
 }
 
 export function registrarUsuario(req: Request, res: Response) {
-  const { email, contrasenia, nombre, apellido } = req.body;
+  const { email, contrasenia, nombre, apellido,direccion } = req.body;
 
   const emailNormalizado = email.trim().toLowerCase();
 
@@ -17,7 +17,7 @@ export function registrarUsuario(req: Request, res: Response) {
     return res.status(409).json({ mensaje: "El email ya está registrado" });
   }
 
-  usuarioService.registrar({ email: emailNormalizado, contrasenia, nombre, apellido });
+  usuarioService.registrar({ email: emailNormalizado, contrasenia, nombre, apellido, direccion });
 
   res.status(201).json({ mensaje: "Usuario registrado" });
 }
@@ -38,6 +38,6 @@ export function iniciarSesion(req: Request, res: Response) {
     email: usuario.email,
     nombre: usuario.nombre,
     apellido: usuario.apellido,
-    direccion: usuario
+    direccion: usuario.direccion,
   });
 }
