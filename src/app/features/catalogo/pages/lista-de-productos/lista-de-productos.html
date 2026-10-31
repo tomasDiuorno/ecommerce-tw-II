@@ -1,8 +1,10 @@
 <h2>Lista de Productos</h2>
+
 <div class="grid-productos">
 
   @for (p of productos(); track p.id) {
-  <app-card-product [producto]="p" (agregarAlCarrito)="onAgregarAlCarrito($event)"></app-card-product>
+    <app-card-product [producto]="p" (agregarAlCarrito)="onAgregarAlCarrito($event)">
+    </app-card-product>
   }
 
 </div>
