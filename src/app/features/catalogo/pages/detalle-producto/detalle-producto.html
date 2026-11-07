@@ -1,0 +1,72 @@
+<section class="mx-auto max-w-5xl p-6">
+  <a routerLink="/productos" class="text-sm text-[#615fff] hover:underline">
+    Volver a productos
+  </a>
+
+  @if (producto(); as p) {
+    <div class="mt-6 grid gap-8 md:grid-cols-2">
+      <div class="flex h-80 items-center justify-center border border-slate-200 bg-white p-4">
+        <img [src]="p.imagen" [alt]="p.nombre" class="h-full w-full object-contain" />
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <span class="text-xs font-semibold uppercase tracking-wide text-[#615fff]">
+          {{ p.categoria }}
+        </span>
+
+        <h1 class="text-3xl font-bold text-slate-900">{{ p.nombre }}</h1>
+
+        <p class="text-slate-600">{{ p.descripcion }}</p>
+
+        <span class="text-2xl font-bold text-slate-900">
+          {{ p.precio | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}
+        </span>
+
+        @if (p.disponible) {
+          <span class="text-sm text-green-600">Disponible</span>
+        } @else {
+          <span class="text-sm text-red-500">Sin stock</span>
+        }
+
+        <div class="flex items-center gap-3">
+  <span class="text-sm text-slate-600">Cantidad</span>
+
+          <div class="flex items-center border border-slate-300">
+            <button
+              type="button"
+              (click)="disminuir()"
+              [disabled]="cantidad() === 1"
+              aria-label="Disminuir cantidad"
+              class="h-9 w-9 cursor-pointer text-lg hover:bg-slate-100
+                    disabled:cursor-not-allowed disabled:opacity-40"
+            >−</button>
+
+            <span class="w-10 text-center text-sm font-semibold">{{ cantidad() }}</span>
+
+            <button
+              type="button"
+              (click)="aumentar()"
+              aria-label="Aumentar cantidad"
+              class="h-9 w-9 cursor-pointer text-lg hover:bg-slate-100"
+            >+</button>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="agregarAlCarrito(p)"
+          [disabled]="!p.disponible"
+          class="h-11 w-full cursor-pointer bg-[#ffe35e] text-sm font-semibold text-neutral-900
+                 transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Agregar al carrito
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="mt-10 text-center">
+      <p class="text-slate-600">No encontramos ese producto.</p>
+      <a routerLink="/productos" class="text-[#615fff] hover:underline">Ver todos los productos</a>
+    </div>
+  }
+</section>
