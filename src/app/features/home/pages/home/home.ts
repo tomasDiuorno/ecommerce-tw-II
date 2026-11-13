@@ -3,7 +3,7 @@ import { Component, computed, inject, OnInit } from '@angular/core';
 import { HeroCarousel } from '../../components/hero-carousel/hero-carousel';
 import { Beneficios } from '../../components/beneficios/beneficios';
 
-import { CardProduct } from '../../../catalogo/components/card-product/card-product';
+import { CardProduct } from '../../../../shared/components/card-product/card-product';
 import { CatalogoService } from '../../../catalogo/services/catalogo';
 
 import { Producto } from '../../../../shared/models/producto';

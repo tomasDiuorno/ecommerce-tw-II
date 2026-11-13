@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Producto } from '../../../../shared/models/producto';
 import { CatalogoService } from '../../services/catalogo';
-import { CardProduct } from '../../components/card-product/card-product';
+import { CardProduct } from '../../../../shared/components/card-product/card-product';
 import { CarritoService } from '../../../carrito/services/carrito';
 
 @Component({

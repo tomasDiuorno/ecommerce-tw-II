@@ -1,0 +1,77 @@
+<article
+  [routerLink]="['/productos', producto().id]" 
+  class="group/card flex h-full w-full min-w-0 cursor-pointer flex-col gap-3 border border-slate-200
+         bg-white p-3 transition-colors duration-300 hover:border-[#615fff]/40"
+>
+  <!-- Imagen -->
+  <div class="relative h-44 w-full shrink-0 overflow-hidden bg-white">
+    <img
+      [src]="producto().imagen"
+      [alt]="producto().nombre"
+      loading="lazy"
+      decoding="async"
+      class="absolute inset-0 h-full w-full object-contain"
+    />
+  </div>
+
+  <!-- Textos: cada línea tiene altura fija -->
+  <div class="shrink-0">
+    <span
+      class="block h-4 truncate text-[9px] font-semibold uppercase leading-4 tracking-wide text-[#615fff]"
+    >
+      {{ producto().categoria }}
+    </span>
+
+    <h3 class="h-5 truncate text-sm leading-5 text-slate-900">
+      {{ producto().nombre }}
+    </h3>
+
+    <p class="h-4 truncate text-xs leading-4 text-slate-500">
+      {{ producto().descripcion }}
+    </p>
+  </div>
+
+  <!-- Precio + CTA -->
+  <span>{{ producto().disponible ? 'Disponible' : 'No disponible' }}</span>
+  <div class="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+    <span class="shrink-0 text-sm font-bold text-slate-900">
+      {{ producto().precio | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}
+    </span>
+
+    <button
+      type="button"
+      [disabled]="!producto().disponible"
+      (click)="onAgregarAlCarrito(); $event.stopPropagation()"
+      [attr.aria-label]="producto().disponible ? 'Agregar ' + producto().nombre + ' al carrito' : producto().nombre + ' no disponible'"
+      class="group relative flex h-9 min-w-[110px] flex-1 cursor-pointer items-center justify-center
+             overflow-hidden rounded-none bg-[#ffe35e]
+             transition-transform duration-500 active:scale-95
+             focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+             focus-visible:outline-[#615fff]"
+    >
+      <span
+        class="absolute -left-[50px] z-[2] flex h-[30px] w-[30px] items-center justify-center
+               overflow-hidden rounded-full transition-transform duration-500
+               group-hover:translate-x-[58px]"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 576 512"
+          class="h-[1em] fill-neutral-900"
+          aria-hidden="true"
+        >
+          <path
+            d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"
+          />
+        </svg>
+      </span>
+
+      <span
+        class="z-[1] flex h-full items-center whitespace-nowrap text-xs font-semibold text-neutral-900
+               transition-transform duration-500 group-hover:translate-x-2.5"
+      >
+        {{ producto().disponible ? 'Agregar' : 'No disponible' }}
+      </span>
+    </button>
+  </div>
+</article>

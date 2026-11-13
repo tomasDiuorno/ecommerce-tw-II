@@ -13,6 +13,10 @@ export class CatalogoService {
 
   readonly products = this.productsSignal.asReadonly();
 
+  obtenerPorId(id: number): Producto | undefined {
+    return this.products().find(producto => producto.id === id);
+  }
+
 
   readonly categorias = computed(() =>
     [...new Set(this.products().map(p => p.categoria))]
