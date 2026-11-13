@@ -1,0 +1,9 @@
+[
+  {
+    "id": 1,
+    "email": "juan@test.com",
+    "contrasenia": "Clave123!",
+    "nombre": "Juan",
+    "apellido": "Pfeiffer"
+  }
+]

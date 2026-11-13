@@ -10,7 +10,7 @@ import { CarritoService } from '../../../carrito/services/carrito';
   styleUrl: './lista-de-productos.css',
   templateUrl: './lista-de-productos.html',
 })
-export class ListaDeProductos {
+export class ListaDeProductos implements OnInit {
 
   private readonly catalogo = inject(CatalogoService);
   private readonly carrito = inject(CarritoService);
@@ -18,11 +18,15 @@ export class ListaDeProductos {
   productos = this.catalogo.products;
 
 
-  onAgregarAlCarrito(producto: Producto) {
+  ngOnInit(): void {
+    this.catalogo.cargarProductos();
+  }
+
+  onAgregarAlCarrito(producto: Producto): void {
     this.carrito.agregarProducto(producto);
   }
 
-  onToggleDisponible(productId: number) {
+  onToggleDisponible(productId: number): void {
     this.catalogo.alternarDisponibilidad(productId);
   }
 }

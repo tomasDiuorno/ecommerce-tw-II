@@ -1,0 +1,34 @@
+<div class="max-w-md mx-auto mt-16 px-6">
+  <h1 class="text-3xl font-medium mb-6">Crear cuenta</h1>
+
+  <form (ngSubmit)="registrarse()" class="flex flex-col gap-4">
+    <input name="nombre" [(ngModel)]="nombre" placeholder="Nombre" required
+      class="border border-gray-300 px-3 py-2 rounded focus:outline-indigo-500">
+
+    <input name="apellido" [(ngModel)]="apellido" placeholder="Apellido" required
+      class="border border-gray-300 px-3 py-2 rounded focus:outline-indigo-500">
+
+    <input name="email" type="email" [(ngModel)]="email" placeholder="Email" required
+      class="border border-gray-300 px-3 py-2 rounded focus:outline-indigo-500">
+
+    <input name="direccion" [(ngModel)]="direccion" placeholder="Dirección" required
+      class="border border-gray-300 px-3 py-2 rounded focus:outline-indigo-500">
+
+    <input name="contrasenia" type="password" [(ngModel)]="contrasenia" placeholder="Contraseña" required
+      class="border border-gray-300 px-3 py-2 rounded focus:outline-indigo-500">
+
+    @if (error()) {
+      <p class="text-red-600 text-sm">{{ error() }}</p>
+    }
+
+    <button type="submit"
+      class="py-3 bg-indigo-500 text-white font-medium rounded hover:bg-indigo-600 cursor-pointer">
+      Registrarme
+    </button>
+  </form>
+
+  <p class="text-sm text-gray-500 mt-4">
+    ¿Ya tenés cuenta?
+    <a routerLink="/signin" class="text-indigo-500 hover:underline">Iniciá sesión</a>
+  </p>
+</div>
