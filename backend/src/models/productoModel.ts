@@ -1,0 +1,96 @@
+export interface Producto {
+    id: number;
+    nombre: string;
+    descripcion: string;
+    categoria: string;
+    precio: number;
+    imagen: string;
+    disponible: boolean;
+    destacado: boolean;
+}
+
+export const productos: Producto[] = [
+    { id: 1, nombre: 'Mouse', 
+        descripcion: 'Mouse inalambrico', 
+        categoria: 'electronics', 
+        precio: 8000, 
+        imagen: 'https://diamondsystemar.vtexassets.com/arquivos/ids/163744-1600-auto?v=638850831204430000&width=1600&height=auto&aspect=true', 
+        disponible: true, 
+        destacado: true 
+    },
+    { id: 2, 
+        nombre: 'Teclado', 
+        descripcion: 'Teclado mecanico', 
+        categoria: 'electronics', 
+        precio: 12000, 
+        imagen: 'https://diamondsystemar.vtexassets.com/arquivos/ids/162444-1600-auto?v=638808487721170000&width=1600&height=auto&aspect=true', 
+        disponible: false, 
+        destacado: true 
+    },
+    { id: 3, 
+        nombre: 'Auriculares', 
+        descripcion: 'Auriculares bluetooth con cancelacion de ruido', 
+        categoria: 'electronics', 
+        precio: 35000, 
+        imagen: 'https://static.bidcom.com.ar/publicacionesML/productos/ABLUE164/1000x1000-ABLUE164-A.jpg', 
+        disponible: true, 
+        destacado: true 
+    },
+    { id: 4, 
+        nombre: 'Monitor 24"', 
+        descripcion: 'Monitor Full HD 75Hz', 
+        categoria: 'electronics', 
+        precio: 18000, 
+        imagen: 'https://diamondsystemar.vtexassets.com/arquivos/ids/164377/Moni-PC-GO-5-scaled-1000x1000.jpg?v=638931934981330000', 
+        disponible: true, 
+        destacado: false },
+    { id: 5, 
+        nombre: 'Webcam', 
+        descripcion: 'Webcam Full HD con microfono', 
+        categoria: 'electronics', 
+        precio: 22000, 
+        imagen: 'https://m.media-amazon.com/images/I/61b4sT7kQeL._AC_UF1000,1000_QL80_.jpg', 
+        disponible: true, 
+        destacado: false },
+    { id: 6, 
+        nombre: 'Parlante Bluetooth', 
+        descripcion: 'Parlante portatil resistente al agua', 
+        categoria: 'electronics', 
+        precio: 28000, 
+        imagen: 'https://acdn-us.mitiendanube.com/stores/001/205/055/products/loud-move-2xl_0-4f0af7a33be259a77017170365158033-1024-1024.webp', 
+        disponible: true, 
+        destacado: true },
+    { id: 7, 
+        nombre: 'Pendrive 64GB', 
+        descripcion: 'Pendrive USB 3.0', 
+        categoria: 'electronics', 
+        precio: 6500, 
+        imagen: 'https://http2.mlstatic.com/D_NQ_NP_713383-MLA91881403559_092025-O.webp', 
+        disponible: true, 
+        destacado: false },
+    { id: 8, 
+        nombre: 'Cargador USB-C', 
+        descripcion: 'Cargador rapido 30W', 
+        categoria: 'electronics', 
+        precio: 14000, 
+        imagen: 'https://electrostore.com.ar/wp-content/uploads/2026/07/CARAGDOR-PRO21-USB-TIPOC-CABLE-2.jpg', 
+        disponible: false, 
+        destacado: false },
+    { id: 9, 
+        nombre: 'Tablet 10"', 
+        descripcion: 'Tablet con 64GB de almacenamiento', 
+        categoria: 'electronics', 
+        precio: 21000, 
+        imagen: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSCsXxDFhHodi4oouAVwDLIrFDo5YtrZbLZZ6uf7eIB7o_uFvc0aGzupkE&s=10', 
+        disponible: true, 
+        destacado: true },
+    { id: 10, 
+        nombre: 'Smartwatch', 
+        descripcion: 'Reloj inteligente con monitor de actividad', 
+        categoria: 'electronics', 
+        precio: 45000, 
+        imagen: 'https://naldoar.vtexassets.com/arquivos/ids/197557/NDL_Smartwatch_AM04_img01.jpg?v=638875820853530000', 
+        disponible: true, 
+        destacado: false 
+    }
+];
