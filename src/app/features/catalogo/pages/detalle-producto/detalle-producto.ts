@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -12,7 +12,7 @@ import { Producto } from '../../../../shared/models/producto';
   imports: [CurrencyPipe, RouterLink],
   templateUrl: './detalle-producto.html',
 })
-export class DetalleProducto {
+export class DetalleProducto implements OnInit {
   private route = inject(ActivatedRoute);
   private catalogo = inject(CatalogoService);
   private carrito = inject(CarritoService);
@@ -24,6 +24,10 @@ export class DetalleProducto {
 
   readonly producto = computed(() => this.catalogo.obtenerPorId(this.id()));
   readonly cantidad = signal(1);
+
+  ngOnInit(): void {
+    this.catalogo.cargarProductos();
+  }
 
   aumentar() {
     this.cantidad.update(c => c + 1);
