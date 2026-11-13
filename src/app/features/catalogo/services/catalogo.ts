@@ -19,6 +19,10 @@ export class CatalogoService {
     [...new Set(this.products().map(p => p.categoria))]
   );
 
+  obtenerPorId(id: number): Producto | undefined {
+    return this.products().find(p => p.id === id);
+  }
+
   alternarDisponibilidad(productId: number): void {
   this.productsSignal.update(products =>
     products.map(p =>

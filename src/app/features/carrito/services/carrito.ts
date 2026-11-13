@@ -19,21 +19,21 @@ export class CarritoService {
   this.items().reduce((suma, item) => suma + item.cantidad, 0));
   direccion = signal<string | null>(null);
 
-  agregarProducto(producto: Producto) {
-    const itemExistente = this.items().find(item => item.producto.id == producto.id)
-    if (itemExistente) {
-      this.items.update(items =>
-        items.map(item =>
-          item.producto.id === itemExistente.producto.id
-            ? { ...item, cantidad: item.cantidad + 1 }
-            : item
-        )
-      );
-    } else {
-      this.items.update((items) => [...items, { producto, cantidad: 1 }]);
-    }
-    console.log(this.items());
+  agregarProducto(producto: Producto, cantidad = 1) {
+  const itemExistente = this.items().find(item => item.producto.id == producto.id)
+  if (itemExistente) {
+    this.items.update(items =>
+      items.map(item =>
+        item.producto.id === itemExistente.producto.id
+          ? { ...item, cantidad: item.cantidad + cantidad }
+          : item
+      )
+    );
+  } else {
+    this.items.update((items) => [...items, { producto, cantidad }]);
   }
+  console.log(this.items());
+}
 
   eliminarProducto(itemAEliminar: itemCarrito): void {
     this.items.update(items => {
