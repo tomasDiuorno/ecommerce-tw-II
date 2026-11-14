@@ -5,7 +5,8 @@ import cors from "cors";
 import usuarioRoutes from "./routes/Usuarioruta.js";
 import { pool } from "./config/database.js";
 import productoRoutes from "./routes/productoRuta.js";
-
+import categoriaRoutes from "./routes/categoriaRuta.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 const app = express();
 const PORT = 3000;
 
@@ -14,11 +15,12 @@ app.use(express.json());
 
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/productos", productoRoutes);
+app.use("/api/categorias", categoriaRoutes);
 
 app.get("/", (req: Request, res: Response) =>{
     res.send("hola");
 });
-
+app.use(errorHandler);
 async function iniciarServidor() {
     try{
         await pool.query("SELECT 1");

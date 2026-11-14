@@ -2,15 +2,18 @@
 import { computed, Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Producto } from '../../../shared/models/producto';
-
+import { Categoria } from '../../../shared/models/categoria';
+import { Categorias } from '../../home/components/categorias/categorias';
 @Injectable({ providedIn: 'root' })
 export class CatalogoService {
 
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3000/api/productos';
+  private categoriaApiUrl = 'http://localhost:3000/api/categorias';
 
   private productsSignal = signal<Producto[]>([]);
-
+private readonly categoriasSignal = signal<Categoria[]>([]);
+readonly categorias = this.categoriasSignal.asReadonly();
   readonly products = this.productsSignal.asReadonly();
 
   obtenerPorId(id: number): Producto | undefined {
@@ -18,9 +21,16 @@ export class CatalogoService {
   }
 
 
-  readonly categorias = computed(() =>
-    [...new Set(this.products().map(p => p.categoria))]
-  );
+  cargarCategorias(): void {
+    this.http.get<Categoria[]>(this.categoriaApiUrl).subscribe({
+      next: (categorias) => {
+        this.categoriasSignal.set(categorias);
+      },
+      error: (error) => {
+        console.log("No se puedieron cargar las categorias", error);
+      }
+      });
+    }
 
   cargarProductos(): void {
     this.http.get<Producto[]>(this.apiUrl).subscribe({

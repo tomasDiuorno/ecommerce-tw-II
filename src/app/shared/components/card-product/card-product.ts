@@ -13,7 +13,4 @@ export class CardProduct {
   readonly producto = input.required<Producto>();
 readonly agregarAlCarrito = output<Producto>();
 
-  onAgregarAlCarrito(){
-    this.agregarAlCarrito.emit(this.producto());
-  }
 }
