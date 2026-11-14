@@ -3,18 +3,20 @@ import { Component, computed, inject, OnInit } from '@angular/core';
 import { HeroCarousel } from '../../components/hero-carousel/hero-carousel';
 import { Beneficios } from '../../components/beneficios/beneficios';
 
-import { CardProduct } from '../../../../shared/components/card-product/card-product';
 import { CatalogoService } from '../../../catalogo/services/catalogo';
 
 import { Producto } from '../../../../shared/models/producto';
 import { CarritoService } from '../../../carrito/services/carrito';
+import { Destacados } from '../../components/destacados/destacados';
+import { Categorias } from '../../components/categorias/categorias';
 
 @Component({
   imports: [
     HeroCarousel,
     Beneficios,
-    CardProduct
-  ],
+    Destacados,
+    Categorias
+],
   selector: 'app-home',
   styleUrl: './home.css',
   templateUrl: './home.html',
@@ -29,6 +31,9 @@ export class Home implements OnInit {
     )
   );
 
+  categorias = this.catalogo.categorias;
+  
+
   ngOnInit(): void {
     this.catalogo.cargarProductos();
   }
@@ -36,5 +41,7 @@ export class Home implements OnInit {
   onAgregarAlCarrito(producto: Producto): void {
     this.carrito.agregarProducto(producto);
   }
+
+
 
 }

@@ -14,10 +14,15 @@ private readonly carritoService = inject(CarritoService);
 private readonly catalogoService = inject(CatalogoService);
 
 protected readonly cantidad = this.carritoService.cantidad;
- protected readonly categorias = this.catalogoService.categorias;
+readonly categorias = this.catalogoService.categorias;
 
  protected readonly menuMovilAbierto = signal(false);
   protected readonly categoriasAbiertas = signal(false);
+
+ngOnInit(): void {
+    this.catalogoService.cargarCategorias();
+    console.log(this.categorias);
+  }
 
   protected alternarMenuMovil() {
     this.menuMovilAbierto.update(v => !v);
