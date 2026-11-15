@@ -1,6 +1,6 @@
 // catalogo.ts (service)
 import { computed, Injectable, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Producto } from '../../../shared/models/producto';
 import { Categoria } from '../../../shared/models/categoria';
 import { Categorias } from '../../home/components/categorias/categorias';
@@ -32,16 +32,17 @@ readonly categorias = this.categoriasSignal.asReadonly();
       });
     }
 
-  cargarProductos(): void {
-    this.http.get<Producto[]>(this.apiUrl).subscribe({
-      next: (productos) => {
-        this.productsSignal.set(productos);
-      },
-      error: (error) => {
-        console.error('Error al obtener los productos:', error);
-      }
-    });
+  cargarProductos(categoriaId?: number): void {
+  let params = new HttpParams();
+  if (categoriaId !== undefined) {
+    params = params.set('categoria', categoriaId);
   }
+
+  this.http.get<Producto[]>(this.apiUrl, { params }).subscribe({
+    next: (productos) => this.productsSignal.set(productos),
+    error: (error) => console.error('Error al obtener los productos:', error),
+  });
+}
 
   alternarDisponibilidad(productId: number): void {
   this.productsSignal.update(products =>

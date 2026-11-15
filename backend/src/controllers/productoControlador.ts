@@ -1,13 +1,23 @@
-import { Request, Response } from 'express';
-import { productos } from '../models/productoModel.js';
+import { NextFunction, Request, Response } from 'express';
+import {
+  obtenerTodosLosProductos,
+  obtenerDestacados,
+} from '../services/productoService.js';
 
-export const obtenerProductos = (req: Request, res: Response) => {
+export async function obtenerProductos(req: Request, res: Response, next: NextFunction) {
+  try {
+    const productos = await obtenerTodosLosProductos(req.query.categoria);
     res.json(productos);
-};
+  } catch (error) {
+    next(error);
+  }
+}
 
-export const obtenerProductosDestacados = (req: Request, res: Response) => {
-
-    const destacados = productos.filter( producto => producto.destacado );
-
+export async function obtenerProductosDestacados(req: Request, res: Response, next: NextFunction) {
+  try {
+    const destacados = await obtenerDestacados();
     res.json(destacados);
-};
+  } catch (error) {
+    next(error);
+  }
+}
