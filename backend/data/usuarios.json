@@ -5,5 +5,13 @@
     "contrasenia": "Clave123!",
     "nombre": "Juan",
     "apellido": "Pfeiffer"
+  },
+  {
+    "id": 2,
+    "email": "prueba1@test.com",
+    "contrasenia": "Clave123!",
+    "nombre": "Juan",
+    "apellido": "Pfeiffer",
+    "direccion": "Calle Falsa 123"
   }
 ]

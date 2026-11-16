@@ -8,8 +8,19 @@ export function obtenerUsuarios(req: Request, res: Response) {
   res.json(usuarios);
 }
 
+
 export function registrarUsuario(req: Request, res: Response) {
-  const { email, contrasenia, nombre, apellido,direccion } = req.body;
+  const { email, contrasenia, nombre, apellido, direccion } = req.body ?? {};
+
+  if (!email || !contrasenia || !nombre || !apellido || !direccion) {
+    return res.status(400).json({ mensaje: "Faltan datos obligatorios" });
+  }
+
+  if (!usuarioService.contraseniaEsValida(contrasenia)) {
+    return res.status(400).json({
+      mensaje: "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo"
+    });
+  }
 
   const emailNormalizado = email.trim().toLowerCase();
 
