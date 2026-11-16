@@ -21,7 +21,7 @@ import { Categorias } from '../../components/categorias/categorias';
   styleUrl: './home.css',
   templateUrl: './home.html',
 })
-export class Home implements OnInit {
+export class Home {
   private readonly catalogo = inject(CatalogoService);
   private readonly carrito = inject(CarritoService);
 
@@ -33,10 +33,6 @@ export class Home implements OnInit {
 
   categorias = this.catalogo.categorias;
   
-
-  ngOnInit(): void {
-    this.catalogo.cargarProductos();
-  }
 
   onAgregarAlCarrito(producto: Producto): void {
     this.carrito.agregarProducto(producto);
