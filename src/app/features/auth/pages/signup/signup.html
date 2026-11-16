@@ -21,6 +21,10 @@
       <p class="text-red-600 text-sm">{{ error() }}</p>
     }
 
+        @if (exito()) {
+      <p class="text-green-600 text-sm">¡Cuenta creada con éxito! Te redirigimos al inicio...</p>
+    }
+
     <button type="submit"
       class="py-3 bg-indigo-500 text-white font-medium rounded hover:bg-indigo-600 cursor-pointer">
       Registrarme

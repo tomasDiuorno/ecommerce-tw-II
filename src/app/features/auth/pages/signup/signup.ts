@@ -19,6 +19,7 @@ export class Signup {
   contrasenia = '';
 
   error = signal('');
+  exito = signal(false); //pasa a true cuando el back da 201. al ser signal es se actualiza el html
 
   registrarse() {
     this.error.set('');
@@ -30,7 +31,10 @@ export class Signup {
       direccion: this.direccion,
       contrasenia: this.contrasenia
     }).subscribe({
-      next: () => this.router.navigate(['/signin']),
+            next: () => {
+        this.exito.set(true);
+        setTimeout(() => this.router.navigate(['/']), 2000);
+      },
       error: (err) => this.error.set(err.error?.mensaje ?? 'Ocurrió un error')
     });
   }

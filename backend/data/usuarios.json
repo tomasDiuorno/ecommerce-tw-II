@@ -13,5 +13,13 @@
     "nombre": "Juan",
     "apellido": "Pfeiffer",
     "direccion": "Calle Falsa 123"
+  },
+  {
+    "id": 3,
+    "email": "juan.pfeiffer@boreal-it.com",
+    "contrasenia": "Clave123!",
+    "nombre": "Juan Pablo",
+    "apellido": "Pfeiffer",
+    "direccion": "Lima 555"
   }
 ]
