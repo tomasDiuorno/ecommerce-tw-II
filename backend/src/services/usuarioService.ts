@@ -1,40 +1,62 @@
-import { leerUsuarios, guardarUsuarios, Usuario } from "../models/usuarioModel.js";
+import bcrypt from "bcryptjs";
+import type { UsuarioDB } from "../models/usuarioModel.js";
+import { DatosRegistro } from "../models/dto/RegistroDTO.js";
+import { buscarUsuarioPorEmail, crearUsuario } from "../repositories/usuarioRepositorio.js";
+
+export type UsuarioPublico = Omit<UsuarioDB, "contraseniaHash">;
 
 export class UsuarioService {
-  obtenerTodos(): Usuario[] {
-    return leerUsuarios();
+  async registrar(datos: DatosRegistro): Promise<UsuarioPublico> {
+    const contraseniaHash = await bcrypt.hash(datos.contrasenia, 10);
+    const nuevoUsuario = await crearUsuario({
+      email: datos.email,
+      contraseniaHash,
+      nombre: datos.nombre,
+      apellido: datos.apellido,
+      direccion: datos.direccion
+    });
+
+    const { contraseniaHash: _, ...usuarioPublico } = nuevoUsuario;
+
+    return usuarioPublico;
   }
 
-  registrar(datos: Omit<Usuario, "id">): void {
-    const usuarios = leerUsuarios();
-
-    const nuevoUsuario: Usuario = {
-      id: usuarios.length + 1,
-      ...datos
-    };
-
-    usuarios.push(nuevoUsuario);
-    guardarUsuarios(usuarios);
-  }
-
-  existeEmail(email: string): boolean {
-    const usuarios = leerUsuarios();
-    return usuarios.some(u => u.email === email);
-  }
-
-  /*Valida en todos los casos que si tiene un caracter de esos que pone ahi es obligatorio */
-    contraseniaEsValida(contrasenia: string): boolean {
+  contraseniaEsValida(contrasenia: string): boolean {
     const tieneLargo = contrasenia.length >= 8;
     const tieneMayuscula = /[A-Z]/.test(contrasenia);
     const tieneMinuscula = /[a-z]/.test(contrasenia);
     const tieneNumero = /[0-9]/.test(contrasenia);
     const tieneSimbolo = /[^A-Za-z0-9]/.test(contrasenia);
 
-    return tieneLargo && tieneMayuscula && tieneMinuscula && tieneNumero && tieneSimbolo;
+    return tieneLargo &&
+      tieneMayuscula &&
+      tieneMinuscula &&
+      tieneNumero &&
+      tieneSimbolo;
   }
 
-    buscarPorCredenciales(email: string, contrasenia: string): Usuario | undefined {
-    const usuarios = leerUsuarios();
-    return usuarios.find(u => u.email === email && u.contrasenia === contrasenia);
+  async buscarPorCredenciales(
+    email: string,
+    contrasenia: string
+  ): Promise<UsuarioPublico | null> {
+
+    const usuario = await buscarUsuarioPorEmail(email);
+
+    if (!usuario) {
+      return null;
+    }
+
+    const contraseniaCorrecta = await bcrypt.compare(
+      contrasenia,
+      usuario.contraseniaHash
+    );
+
+    if (!contraseniaCorrecta) {
+      return null;
+    }
+
+    const { contraseniaHash: _, ...usuarioPublico } = usuario;
+
+    return usuarioPublico;
   }
 }
