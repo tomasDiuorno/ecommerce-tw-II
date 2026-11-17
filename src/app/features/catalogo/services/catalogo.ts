@@ -15,6 +15,7 @@ export class CatalogoService {
 private readonly categoriasSignal = signal<Categoria[]>([]);
 readonly categorias = this.categoriasSignal.asReadonly();
   readonly products = this.productsSignal.asReadonly();
+  
 
   obtenerPorId(id: number): Producto | undefined {
     return this.products().find(producto => producto.id === id);

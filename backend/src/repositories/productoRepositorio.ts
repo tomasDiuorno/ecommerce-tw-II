@@ -18,7 +18,7 @@ const SELECT_PRODUCTOS = `
 export async function listarProductos(categoriaId: number | null): Promise<Producto[]> {
   const resultado = await pool.query<Producto>(
     `${SELECT_PRODUCTOS}
-     WHERE ($1::int IS NULL OR p.categoria_id = $1)
+     WHERE ($1::int IS NULL OR p.categoria_id = $1) AND p.disponible = TRUE
      ORDER BY p.id`,
     [categoriaId],
   );
@@ -28,8 +28,22 @@ export async function listarProductos(categoriaId: number | null): Promise<Produ
 export async function listarProductosDestacados(): Promise<Producto[]> {
   const resultado = await pool.query<Producto>(
     `${SELECT_PRODUCTOS}
-     WHERE p.destacado = TRUE
+     WHERE p.destacado = TRUE AND p.disponible = TRUE
      ORDER BY p.id`,
   );
   return resultado.rows;
+}
+
+export async function agregarStock(id:number, stock:number):Promise<void>{
+  await pool.query(
+    `UPDATE productos SET stock = stock + $1 WHERE productos.id = $2`,
+     [stock, id]
+  );
+}
+
+export async function quitarStock(id:number, stock:number):Promise<void>{
+  await pool.query(
+    `UPDATE productos SET stock = stock - $1 WHERE id = $2 AND stock >= $1`,
+     [stock, id]
+  );
 }
