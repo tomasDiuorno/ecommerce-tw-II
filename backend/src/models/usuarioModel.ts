@@ -1,6 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 
+export interface UsuarioDB {
+    id: number;
+    email: string;
+    contraseniaHash: string;
+    nombre: string;
+    apellido: string;
+    direccion: string;
+}
 export interface Usuario{
     id: number;
     email: string;

@@ -11,7 +11,7 @@ export const shorthands = undefined;
 export const up = (pgm) => {
      pgm.sql(`
     ALTER TABLE productos 
-    stock INT NOT NULL DEFAULT 0 CHECK (stock >= 0)
+    ADD COLUMN stock INT NOT NULL DEFAULT 0 CHECK (stock >= 0)
   `);
 };
 
