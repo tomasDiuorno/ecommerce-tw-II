@@ -1,11 +1,13 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { CatalogoService } from '../../services/catalogo';
 import { CarritoService } from '../../../carrito/services/carrito';
 import { Producto } from '../../../../shared/models/producto';
+import { ProductosService } from '../../../../shared/services/productosService';
 
 @Component({
   selector: 'app-detalle-producto',
@@ -14,7 +16,7 @@ import { Producto } from '../../../../shared/models/producto';
 })
 export class DetalleProducto implements OnInit {
   private route = inject(ActivatedRoute);
-  private catalogo = inject(CatalogoService);
+  private productosService = inject(ProductosService);
   private carrito = inject(CarritoService);
 
   private id = toSignal(
@@ -22,11 +24,25 @@ export class DetalleProducto implements OnInit {
     { initialValue: NaN }
   );
 
-  readonly producto = computed(() => this.catalogo.obtenerPorId(this.id()));
+  readonly producto = signal<Producto | undefined>(undefined);
   readonly cantidad = signal(1);
+  readonly cargando = signal(true);
+  readonly error = signal<string | null>(null);
 
-  ngOnInit(): void {
-    this.catalogo.cargarProductos();
+ ngOnInit(): void{
+    this.productosService.obtenerPorId(this.id()).subscribe({
+      next: productoRecibidos =>{
+        this.producto.set(productoRecibidos);
+        this.cargando.set(false);
+      },
+      error: (error: unknown) => {
+        if (!(error instanceof HttpErrorResponse && error.status === 404)) {
+          this.error.set('No se pudo cargar el producto.');
+        }
+        this.cargando.set(false);
+      }
+    });
+    
   }
 
   aumentar() {
