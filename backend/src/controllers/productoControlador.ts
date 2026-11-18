@@ -6,7 +6,10 @@ import {
 
 export async function obtenerProductos(req: Request, res: Response, next: NextFunction) {
   try {
-    const productos = await obtenerTodosLosProductos(req.query.categoria);
+    const busqueda =
+      typeof req.query.busqueda === 'string' ? req.query.busqueda : undefined;
+
+    const productos = await obtenerTodosLosProductos(req.query.categoria, busqueda);
     res.json(productos);
   } catch (error) {
     next(error);

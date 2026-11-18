@@ -33,10 +33,13 @@ readonly categorias = this.categoriasSignal.asReadonly();
       });
     }
 
-  cargarProductos(categoriaId?: number): void {
+  cargarProductos(categoriaId?: number, busqueda?: string): void {
   let params = new HttpParams();
   if (categoriaId !== undefined) {
     params = params.set('categoria', categoriaId);
+  }
+  if (busqueda !== undefined) {
+    params = params.set('busqueda', busqueda);
   }
 
   this.http.get<Producto[]>(this.apiUrl, { params }).subscribe({

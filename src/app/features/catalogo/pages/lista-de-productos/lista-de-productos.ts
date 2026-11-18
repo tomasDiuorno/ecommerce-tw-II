@@ -18,12 +18,14 @@ export class ListaDeProductos implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
   productos = this.catalogo.products;
-
+  protected readonly busqueda = signal<string | null>(null);
 
   ngOnInit(): void {
   this.route.queryParamMap.subscribe((params) => {
     const categoria = params.get('categoria');
-    this.catalogo.cargarProductos(categoria ? Number(categoria) : undefined);
+    const busqueda = params.get('busqueda');
+    this.busqueda.set(busqueda);
+    this.catalogo.cargarProductos(categoria ? Number(categoria) : undefined, busqueda || undefined);
   });
 }
 

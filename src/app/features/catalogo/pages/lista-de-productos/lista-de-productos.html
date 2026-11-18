@@ -1,5 +1,8 @@
 @let listado = productos();
-@let categoria = listado[0]?.categoria || 'Catálogo';
+@let busquedaActual = busqueda();
+@let categoria = busquedaActual
+  ? 'Resultados para "' + busquedaActual + '"'
+  : (listado[0]?.categoria || 'Catálogo');
 
 <main class="mx-auto min-h-[70vh] max-w-screen-2xl px-5 pb-16 pt-6 sm:px-8 md:px-16 md:pb-24 lg:px-24 xl:px-32" aria-labelledby="titulo-categoria">
   <nav aria-label="Ruta de navegación" class="mb-8 text-sm sm:mb-12">
@@ -58,7 +61,11 @@
       <div class="rounded-xl border border-gray-200 bg-white px-6 py-16 text-center sm:py-20">
         <svg class="mx-auto mb-6 size-12 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 8v9l9 5 9-5V8M12 13v9M7.5 5.5l9 5" /></svg>
         <h2>No hay productos para mostrar</h2>
-        <p class="mx-auto max-w-md text-sm leading-6 text-gray-600">Podés explorar otras categorías para encontrar lo que estás buscando.</p>
+        <p class="mx-auto max-w-md text-sm leading-6 text-gray-600">@if (busquedaActual) {
+          No encontramos productos que coincidan con tu búsqueda. Probá con otro nombre.
+        } @else {
+          Podés explorar otras categorías para encontrar lo que estás buscando.
+        }</p>
         <a href="./" class="mt-7 inline-flex min-h-12 items-center justify-center rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-600">Explorar categorías</a>
       </div>
     }
