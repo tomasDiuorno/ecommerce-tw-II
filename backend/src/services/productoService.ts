@@ -2,16 +2,19 @@ import { HttpError } from "../middlewares/HttpError.js";
 import { Producto } from "../models/productoModel.js";
 import { listarProductos, listarProductosDestacados, agregarStock, quitarStock } from "../repositories/productoRepositorio.js";
 
-export function obtenerTodosLosProductos(categoria?: unknown): Promise<Producto[]> {
-    if (categoria === undefined) {
-        return listarProductos(null);
+export function obtenerTodosLosProductos(categoria?: unknown, busqueda?: string): Promise<Producto[]> {
+     let categoriaId: number | null = null;
+
+    if (categoria !== undefined) {
+        if (typeof categoria !== "string" || !/^\d+$/.test(categoria)) {
+            throw new HttpError(400, "La categoría debe ser un número entero");
+        }
+        categoriaId = Number(categoria);
     }
 
-    if (typeof categoria !== "string" || !/^\d+$/.test(categoria)) {
-        throw new HttpError(400, "La categoría debe ser un número entero");
-    }
+    const texto = busqueda?.trim().slice(0, 100) || null;
 
-    return listarProductos(Number(categoria));
+    return listarProductos(categoriaId, texto);
 }
 
 export function obtenerDestacados(): Promise<Producto[]> {

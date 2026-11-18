@@ -3,9 +3,21 @@ import { EnvioService, type CotizacionEnvio } from './envio';
 import { Producto } from '../../../shared/models/producto';
 import { itemCarrito } from '../models/item-carrito';
 
+
+const CLAVE_CARRITO = 'carrito';
+
+function cargarItemsGuardados(): itemCarrito[] {
+  try {
+    const guardado = localStorage.getItem(CLAVE_CARRITO);
+    return guardado ? JSON.parse(guardado) : [];
+  } catch {
+    return [];
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class CarritoService {
-  private items = signal<itemCarrito[]>([]);
+  private items = signal<itemCarrito[]>(cargarItemsGuardados());
 
   totalProductos = computed(() =>
     this.items().reduce(
@@ -63,6 +75,14 @@ export class CarritoService {
       });
 
       onCleanup(() => suscripcion.unsubscribe());
+    });
+
+    effect(() => {
+      try {
+        localStorage.setItem(CLAVE_CARRITO, JSON.stringify(this.items()));
+      } catch {
+        
+      }
     });
   }
 
