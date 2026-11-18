@@ -47,3 +47,18 @@ export async function quitarStock(id:number, stock:number):Promise<void>{
      [stock, id]
   );
 }
+
+export interface ProductoParaEnvio {id: number;precio: number;}
+
+export async function obtenerProductosParaEnvio( ids: number[],):
+ Promise<ProductoParaEnvio[]> {
+  const resultado = await pool.query<ProductoParaEnvio>(
+    `SELECT id, precio::float8 AS precio
+     FROM productos
+     WHERE id = ANY($1::int[])
+       AND disponible = TRUE`,
+    [ids],
+  );
+
+  return resultado.rows;
+}

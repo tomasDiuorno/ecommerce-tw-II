@@ -62,10 +62,33 @@
             }
         </div>
 
-            <label
-                for="payment-method"
-                class="block text-sm font-medium uppercase mt-6"
-            >
+        <label for="codigo-postal" class="block text-sm font-medium mt-6">
+        Código postal de entrega
+        </label>
+
+        <input id="codigo-postal" 
+        type="text" 
+        autocomplete="postal-code" 
+        [formControl]="codigoPostalControl"
+        aria-describedby="ayuda-codigo-postal"
+        class="w-full border border-gray-400 rounded px-3 py-2 mt-2"
+        >
+
+        <p id="ayuda-codigo-postal" class="text-sm text-gray-700 mt-1">
+        Ingresá 4 números o el CPA completo, por ejemplo B1754JEC.
+        </p>
+
+       <button type="button" (click)="aplicarCodigoPostal()"
+        class="mt-2 rounded bg-indigo-700 px-4 py-2 text-white
+                cursor-pointer transition
+                hover:bg-indigo-800
+                active:bg-indigo-900 active:scale-95
+                focus-visible:outline-2 focus-visible:outline-offset-2
+                focus-visible:outline-indigo-700">
+        Calcular envío
+        </button>
+
+            <label for="payment-method" class="block text-sm font-medium uppercase mt-6">
                 Método de pago
             </label>
 
@@ -80,26 +103,52 @@
 
         <hr class="border-gray-300" />
 
-        <div class="text-gray-500 mt-4 space-y-2">
+        <div class="text-gray-800 mt-4 space-y-2" aria-live="polite">
             <p class="flex justify-between">
                 <span>Precio</span>
-                <span>{{totalProductos() | dinero}}</span>
+                <span>{{ totalProductos() | dinero }}</span>
             </p>
 
             <p class="flex justify-between">
                 <span>Costo de envío</span>
-                <span>{{envio() | dinero}}</span>
+                <span>
+                @if (carritoVacio()) {
+                    {{ 0 | dinero }}
+                } @else if (calculandoEnvio()) {
+                    Calculando...
+                } @else if (errorEnvio()) {
+                    No disponible
+                } @else if (tieneCotizacion()) {
+                    {{ envio() | dinero }}
+                } @else {
+                    Pendiente
+                }
+                </span>
             </p>
 
-        
+            @if (errorEnvio()) {
+                <p class="text-sm text-red-800">{{ errorEnvio() }}</p>
+            } @else if (!carritoVacio() && !tieneCotizacion() && !calculandoEnvio()) {
+                <p class="text-sm">
+                Seleccioná una dirección y aplicá el código postal para cotizar.
+                </p>
+            }
+
             <p class="flex justify-between text-lg font-medium mt-3">
                 <span>Total:</span>
-                <span>{{totalCompra() | dinero}}</span>
+                <span>
+                @if (carritoVacio() || tieneCotizacion()) {
+                    {{ totalCompra() | dinero }}
+                } @else {
+                    Pendiente
+                }
+                </span>
             </p>
-        </div>
+            </div>
 
         <button
             type="button"
+            [disabled]="carritoVacio() || calculandoEnvio() || !tieneCotizacion()"
             class="w-full py-3 mt-6 bg-indigo-500 text-white font-medium hover:bg-indigo-600 transition-colors cursor-pointer"
         >
             Realizar pedido

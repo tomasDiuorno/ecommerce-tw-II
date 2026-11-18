@@ -17,7 +17,13 @@ export class CarritoResumen {
   envio = input.required<number>();
   totalCompra = input.required<number>();
   resultadoBusqueda = input<DireccionSugerida[]>([]);
+  codigoPostal = model('');
+  calculandoEnvio = input(false);
+  errorEnvio = input<string | null>(null);
+  tieneCotizacion = input(false);
+  carritoVacio = input(true);
 
+  codigoPostalControl = new FormControl('', { nonNullable: true });
 
   mostrarDireccion = signal(false);
   direccionSeleccionada = model<string | null>(null);
@@ -38,6 +44,11 @@ export class CarritoResumen {
       .subscribe(termino => {
         this.direccionABuscar.emit(termino ?? '');
       });
+  }
+
+  aplicarCodigoPostal() {
+  const codigo = this.codigoPostalControl.value.trim().toUpperCase();
+  this.codigoPostal.set(codigo);
   }
 
   toggleDireccion() {

@@ -55,14 +55,18 @@
         </a>
     </div>
 
-    <app-carrito-resumen class="contents" 
-    [totalProductos]="carritoService.totalProductos()" 
-    [envio]="carritoService.envio()" 
+    <app-carrito-resumen
+    class="contents"
+    [totalProductos]="carritoService.cotizacion()?.subtotal ?? carritoService.totalProductos()"
+    [envio]="carritoService.envio()"
     [totalCompra]="carritoService.totalCompra()"
     [resultadoBusqueda]="resultadosActuales()"
-    [direccionSeleccionada]="direccionElegida()"
-    (direccionSeleccionadaChange)="guardarDireccion($event)"
+    [(direccionSeleccionada)]="carritoService.direccion"
+    [(codigoPostal)]="carritoService.codigoPostal"
+    [calculandoEnvio]="carritoService.calculandoEnvio()"
+    [errorEnvio]="carritoService.errorEnvio()"
+    [tieneCotizacion]="carritoService.cotizacion() !== null"
+    [carritoVacio]="carritoService.cantidad() === 0"
     (direccionABuscar)="buscarDireccion($event)"
-    
     ></app-carrito-resumen>
 </div>
