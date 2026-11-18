@@ -1,37 +1,20 @@
 import { Request, Response } from "express";
 import { UsuarioService } from "../services/usuarioService.js";
+import { validarLogin, validarRegistro } from "../validators/usuarioValidator.js";
 
 const usuarioService = new UsuarioService();
 
 export async function registrarUsuario(req: Request, res: Response) {
-  const { email, contrasenia, nombre, apellido, direccion } = req.body ?? {};
+  const datosRegistro = validarRegistro(req.body);
 
-  if (typeof email !== "string" || typeof contrasenia !== "string" ||
-    typeof nombre !== "string" || typeof apellido !== "string" ||
-    typeof direccion !== "string" || !email.trim() || !contrasenia ||
-    !nombre.trim() || !apellido.trim() || !direccion.trim()
-  ) {
+  if (!datosRegistro) {
     return res.status(400).json({
       mensaje: "Faltan datos obligatorios o tienen un formato inválido"
     });
   }
 
-  if (!usuarioService.contraseniaEsValida(contrasenia)) {
-    return res.status(400).json({
-      mensaje: "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo"
-    });
-  }
-
-  const emailNormalizado = email.trim().toLowerCase();
-
   try {
-    const usuario = await usuarioService.registrar({
-      email: emailNormalizado,
-      contrasenia,
-      nombre: nombre.trim(),
-      apellido: apellido.trim(),
-      direccion: direccion.trim()
-    });
+    const usuario = await usuarioService.registrar(datosRegistro);
 
     return res.status(201).json({
       mensaje: "Usuario registrado",
@@ -39,8 +22,7 @@ export async function registrarUsuario(req: Request, res: Response) {
     });
 
   } catch (error) {
-    if ( typeof error === "object" && error !== null && "code" in error && error.code === "23505" )
-    {
+    if (typeof error === "object" && error !== null && "code" in error && error.code === "23505") {
       return res.status(409).json({
         mensaje: "El email ya está registrado"
       });
@@ -55,26 +37,16 @@ export async function registrarUsuario(req: Request, res: Response) {
 }
 
 export async function iniciarSesion(req: Request, res: Response) {
-  const { email, contrasenia } = req.body ?? {};
+  const datosLogin = validarLogin(req.body);
 
-  if (
-    typeof email !== "string" ||
-    typeof contrasenia !== "string" ||
-    !email.trim() ||
-    !contrasenia
-  ) {
+  if (!datosLogin) {
     return res.status(400).json({
       mensaje: "Email y contraseña son obligatorios"
     });
   }
 
   try {
-    const emailNormalizado = email.trim().toLowerCase();
-
-    const usuario = await usuarioService.buscarPorCredenciales(
-      emailNormalizado,
-      contrasenia
-    );
+    const usuario = await usuarioService.buscarPorCredenciales(datosLogin.email, datosLogin.contrasenia);
 
     if (!usuario) {
       return res.status(401).json({

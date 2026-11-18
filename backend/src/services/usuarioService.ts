@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import type { UsuarioDB } from "../models/usuarioModel.js";
-import { DatosRegistro } from "../models/dto/RegistroDTO.js";
+import { DatosRegistro } from "../models/dto/UsuarioDTO.js";
 import { buscarUsuarioPorEmail, crearUsuario } from "../repositories/usuarioRepositorio.js";
 
 export type UsuarioPublico = Omit<UsuarioDB, "contraseniaHash">;
@@ -15,6 +15,10 @@ export class UsuarioService {
       apellido: datos.apellido,
       direccion: datos.direccion
     });
+
+    if (!this.contraseniaEsValida(datos.contrasenia)) {
+      throw new Error("CONTRASENIA_INVALIDA");
+    }
 
     const { contraseniaHash: _, ...usuarioPublico } = nuevoUsuario;
 
