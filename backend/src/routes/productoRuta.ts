@@ -1,9 +1,10 @@
 import { Router } from 'express';
 
-import { obtenerProductosDisponibles, obtenerProductosDestacados, obtenerProductoPorId, obtenerProductos, agregarStock, quitarStock} from '../controllers/productoControlador.js';
+import { obtenerProductosDisponibles, obtenerProductosDestacados, obtenerProductoPorId, obtenerProductos, agregarStock, quitarStock, crearProducto} from '../controllers/productoControlador.js';
 
 const router = Router();
 
+router.post('/', crearProducto);
 router.get('/', obtenerProductosDisponibles);
 router.get('/destacados', obtenerProductosDestacados);
 router.get('/todosLosProductos', obtenerProductos);

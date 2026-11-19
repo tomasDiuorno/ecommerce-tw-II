@@ -1,5 +1,8 @@
 
 import { HttpError } from "../middlewares/HttpError.js";
+import { crearProductoRepositorio } from '../repositories/productoRepositorio.js';
+import { existeCategoriaRepositorio } from '../repositories/categoriaRepositorio.js';
+import { validarCrearProducto } from '../validators/productoValidator.js';
 import { Producto } from "../models/productoModel.js";
 import { ResultadoStock } from "../models/resultadoStock.js";
 import { listarProductosDisponibles, listarProductosDestacados, agregarStock, quitarStock, obtenerProductoPorIdRepositorio, obtenerTodosLosProductos, deshabilitarDisponibilidad } from "../repositories/productoRepositorio.js";
@@ -70,4 +73,18 @@ export async function quitarStockProductoServicio(id: number, cantidad: number):
     case 'actualizado':
       return resultado.stock;
   }
+}
+
+export async function crearProductoServicio(datos: unknown,): Promise<Producto> {
+  const productoValidado = validarCrearProducto(datos);
+
+  const categoriaExiste = await existeCategoriaRepositorio(productoValidado.categoriaId,);
+
+  if (!categoriaExiste) {
+    throw new HttpError(400, 'La categoría seleccionada no existe');
+  }
+
+  const id = await crearProductoRepositorio(productoValidado);
+
+  return obtenerProductoPorIdServicio(id);
 }

@@ -1,5 +1,5 @@
 import { pool } from '../config/database.js';
-import type { Producto } from '../models/productoModel.js';
+import type { Producto, CrearProducto } from '../models/productoModel.js';
 import { ResultadoQuitarStock } from '../models/resultadoQuitarStock.js';
 import { ResultadoStock } from '../models/resultadoStock.js';
 
@@ -146,4 +146,30 @@ export async function obtenerProductosParaEnvio( ids: number[],):
   );
 
   return resultado.rows;
+}
+
+export async function crearProductoRepositorio(producto: CrearProducto,): Promise<number> {
+  const resultado = await pool.query<{ id: number }>(
+    `INSERT INTO productos (nombre, descripcion, categoria_id, precio, imagen, stock, disponible, destacado)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    RETURNING id`,
+    [
+      producto.nombre,
+      producto.descripcion,
+      producto.categoriaId,
+      producto.precio,
+      producto.imagen,
+      producto.stock,
+      producto.disponible,
+      producto.destacado,
+    ],
+  );
+
+  const productoCreado = resultado.rows[0];
+
+  if (productoCreado === undefined) {
+    throw new Error('La inserción no devolvió el ID del producto');
+  }
+
+  return productoCreado.id;
 }

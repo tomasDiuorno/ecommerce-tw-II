@@ -1,6 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Producto } from '../../../shared/models/producto';
+import { Producto, CrearProducto } from '../../../shared/models/producto';
 import { HttpClient } from '@angular/common/http';
 
 @Service()
@@ -25,5 +25,9 @@ export class ProductosAdminService {
         return this.http.get<Producto[]>(
           `${this.apiUrl}/todosLosProductos`,
         );
+      }
+
+      crearProducto(datos: CrearProducto): Observable<Producto> {
+        return this.http.post<Producto>(this.apiUrl, datos);
       }
 }

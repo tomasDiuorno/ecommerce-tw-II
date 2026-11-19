@@ -3,9 +3,10 @@ import { ProductosService } from '../../../../shared/services/productosService';
 import { Producto } from '../../../../shared/models/producto';
 import { ProductosAdminService } from '../../services/productos-admin-service';
 import { TablaProductos } from '../../components/tabla-productos/tabla-productos';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [TablaProductos],
+  imports: [TablaProductos, RouterLink],
   selector: 'app-productos-admin',
   styleUrl: './productos-admin.css',
   templateUrl: './productos-admin.html',
