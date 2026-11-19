@@ -11,6 +11,7 @@ import { Producto } from '../../../../shared/models/producto';
   selector: 'app-detalle-producto',
   imports: [CurrencyPipe, RouterLink],
   templateUrl: './detalle-producto.html',
+  styleUrl: './detalle-producto.css',
 })
 export class DetalleProducto implements OnInit {
   private route = inject(ActivatedRoute);
