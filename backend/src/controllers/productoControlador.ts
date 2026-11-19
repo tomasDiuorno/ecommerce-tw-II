@@ -11,7 +11,8 @@ import { HttpError } from '../middlewares/HttpError.js';
 
 export async function obtenerProductosDisponibles(req: Request, res: Response, next: NextFunction) {
   try {
-    const productos = await obtenerTodosLosProductosDisponiblesServicio(req.query.categoria);
+    const busqueda = typeof req.query.busqueda === 'string' ? req.query.busqueda : undefined;
+    const productos = await obtenerTodosLosProductosDisponiblesServicio(req.query.categoria, busqueda);
     res.json(productos);
   } catch (error) {
     next(error);

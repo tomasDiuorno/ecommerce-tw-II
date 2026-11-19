@@ -4,16 +4,18 @@ import { Producto } from "../models/productoModel.js";
 import { ResultadoStock } from "../models/resultadoStock.js";
 import { listarProductosDisponibles, listarProductosDestacados, agregarStock, quitarStock, obtenerProductoPorIdRepositorio, obtenerTodosLosProductos, deshabilitarDisponibilidad } from "../repositories/productoRepositorio.js";
 
-export function obtenerTodosLosProductosDisponiblesServicio(categoria?: unknown): Promise<Producto[]> {
-    if (categoria === undefined) {
-        return listarProductosDisponibles(null);
+export function obtenerTodosLosProductosDisponiblesServicio(categoria?: unknown, busqueda?: string): Promise<Producto[]> {
+    let categoriaId: number | null = null;
+    if (categoria !== undefined) {
+        if (typeof categoria !== 'string' || !/^\d+$/.test(categoria)) {
+            throw new HttpError(400, 'La categoría debe ser un número entero');
+        }
+        categoriaId = Number(categoria);
     }
 
-    if (typeof categoria !== "string" || !/^\d+$/.test(categoria)) {
-        throw new HttpError(400, "La categoría debe ser un número entero");
-    }
+    const texto = busqueda?.trim().slice(0, 100) || null;
 
-    return listarProductosDisponibles(Number(categoria));
+    return listarProductosDisponibles(categoriaId, texto);
 }
 
 export function obtenerTodosLosProductosServicio(): Promise<Producto[]> {

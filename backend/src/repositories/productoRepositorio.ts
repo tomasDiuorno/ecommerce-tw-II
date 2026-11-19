@@ -18,12 +18,23 @@ const SELECT_PRODUCTOS = `
   JOIN categorias c ON c.id = p.categoria_id
 `;
 
-export async function listarProductosDisponibles(categoriaId: number | null): Promise<Producto[]> {
+function escaparComodines(texto: string): string {
+  return texto.replace(/[\\%_]/g, '\\$&');
+}
+
+export async function listarProductosDisponibles(
+  categoriaId: number | null,
+  busqueda: string | null,
+): Promise<Producto[]> {
+  const patron = busqueda ? `%${escaparComodines(busqueda)}%` : null;
+
   const resultado = await pool.query<Producto>(
     `${SELECT_PRODUCTOS}
-     WHERE ($1::int IS NULL OR p.categoria_id = $1) AND p.disponible = TRUE
+     WHERE ($1::int IS NULL OR p.categoria_id = $1)
+       AND ($2::text IS NULL OR p.nombre ILIKE $2)
+       AND p.disponible = TRUE
      ORDER BY p.id`,
-    [categoriaId],
+    [categoriaId, patron],
   );
   return resultado.rows;
 }
@@ -120,4 +131,19 @@ export async function deshabilitarDisponibilidad(id: number): Promise<void>{
     `UPDATE productos SET disponible = false WHERE id = $1`,
      [id]
   );
+}
+
+export interface ProductoParaEnvio {id: number;precio: number;}
+
+export async function obtenerProductosParaEnvio( ids: number[],):
+ Promise<ProductoParaEnvio[]> {
+  const resultado = await pool.query<ProductoParaEnvio>(
+    `SELECT id, precio::float8 AS precio
+     FROM productos
+     WHERE id = ANY($1::int[])
+       AND disponible = TRUE`,
+    [ids],
+  );
+
+  return resultado.rows;
 }

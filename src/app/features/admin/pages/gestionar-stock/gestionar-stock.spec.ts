@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
 import { GestionarStock } from './gestionar-stock';
 import { Producto } from '../../../../shared/models/producto';
 
@@ -21,7 +20,7 @@ describe('GestionarStock', () => {
       imports: [GestionarStock],
       providers: [
         provideHttpClient(), provideHttpClientTesting(), provideRouter([]),
-        { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '1' })) } },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '1' }) } } },
       ],
     });
     component = TestBed.createComponent(GestionarStock).componentInstance;

@@ -7,12 +7,14 @@ import { pool } from "./config/database.js";
 import productoRoutes from "./routes/productoRuta.js";
 import categoriaRoutes from "./routes/categoriaRuta.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import envioRoutes from './routes/envioRuta.js';
+
 const app = express();
 const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
-
+app.use('/api/envios', envioRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/productos", productoRoutes);
 app.use("/api/categorias", categoriaRoutes);

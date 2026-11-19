@@ -22,23 +22,35 @@ export class ListaDeProductos implements OnInit {
   readonly productos = signal<Producto[]>([]);
   readonly error = signal<string | null>(null);
   readonly cargando = signal(true);
+  protected readonly busqueda = signal<string | null>(null);
 
   ngOnInit(): void {
-  const categoria = this.route.snapshot.queryParamMap.get('categoria');
-  const categoriaId = categoria ? Number(categoria) : undefined;
+    this.route.queryParamMap.pipe(
+      switchMap(params => {
+        const categoria = params.get('categoria');
+        const busqueda = params.get('busqueda');
+        this.busqueda.set(busqueda);
+        this.productos.set([]);
+        this.error.set(null);
+        this.cargando.set(true);
 
-  this.productosService.cargarProductos(categoriaId).subscribe({
-    next: productos => {
+        return this.productosService.cargarProductos(
+          categoria ? Number(categoria) : undefined,
+          busqueda || undefined,
+        ).pipe(
+          catchError(() => {
+            this.error.set('No se pudieron cargar los productos.');
+            this.cargando.set(false);
+            return EMPTY;
+          }),
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(productos => {
       this.productos.set(productos);
       this.cargando.set(false);
-    },
-    error: () => {
-      this.error.set('No se pudieron cargar los productos.');
-      this.cargando.set(false);
-    },
-  });
-}
-
+    });
+  }
   onAgregarAlCarrito(producto: Producto): void {
     this.carrito.agregarProducto(producto);
   }

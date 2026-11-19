@@ -1,0 +1,24 @@
+/* Estilos propios de DetalleProducto.
+   El resto del diseño usa Tailwind en el HTML, igual que card-producto.
+   Acá va solo lo que Tailwind no resuelve cómodo: la animación de entrada. */
+
+@keyframes detalle-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.detalle-entrada {
+  animation: detalle-entrada 0.35s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detalle-entrada {
+    animation: none;
+  }
+}
