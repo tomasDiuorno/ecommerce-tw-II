@@ -24,4 +24,10 @@ export const adminRoutes: Routes = [
     import('./pages/gestionar-stock/gestionar-stock')
       .then(m => m.GestionarStock),
 },
+{
+  path: 'productos/nuevo',
+  loadComponent: () =>
+    import('./pages/crear-producto/crear-producto')
+      .then(m => m.CrearProducto),
+},
 ];

@@ -11,3 +11,11 @@ export async function listarCategorias(): Promise<Categoria[]> {
 
   return resultado.rows;
 }
+
+export async function existeCategoriaRepositorio(id: number,): Promise<boolean> {
+  const resultado = await pool.query<{ id: number }>(
+    'SELECT id FROM categorias WHERE id = $1', [id],
+ );
+
+  return resultado.rows.length > 0;
+}

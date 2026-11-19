@@ -4,7 +4,8 @@ import {
   obtenerDestacados,
   obtenerProductoPorIdServicio,
   obtenerTodosLosProductosServicio,
-  agregarStockServicio
+  agregarStockServicio,
+  crearProductoServicio
 } from '../services/productoService.js';
 import { HttpError } from '../middlewares/HttpError.js';
 
@@ -70,3 +71,15 @@ function verificarNumeroYPositivo(valor: unknown): number {
 
   return valorVerificado;
   }
+
+  export async function crearProducto(req: Request, res: Response, next: NextFunction,): Promise<void> {
+  try {
+    const datos: unknown = req.body;
+
+    const productoCreado = await crearProductoServicio(datos);
+
+    res.status(201).json(productoCreado);
+  } catch (error) {
+    next(error);
+  }
+}
