@@ -1,7 +1,8 @@
 
 import { HttpError } from "../middlewares/HttpError.js";
 import { Producto } from "../models/productoModel.js";
-import { listarProductosDisponibles, listarProductosDestacados, agregarStock, quitarStock, obtenerProductoPorIdRepositorio, obtenerTodosLosProductos } from "../repositories/productoRepositorio.js";
+import { ResultadoStock } from "../models/resultadoStock.js";
+import { listarProductosDisponibles, listarProductosDestacados, agregarStock, quitarStock, obtenerProductoPorIdRepositorio, obtenerTodosLosProductos, deshabilitarDisponibilidad } from "../repositories/productoRepositorio.js";
 
 export function obtenerTodosLosProductosDisponiblesServicio(categoria?: unknown): Promise<Producto[]> {
     if (categoria === undefined) {
@@ -41,16 +42,30 @@ if (!Number.isSafeInteger(stock) || stock <= 0) {
 }
 
     if(!await agregarStock(id, stock)){
-        throw new HttpError(409, 'Hubo un error al actualizar el stock del producto');
+       throw new HttpError(404, 'El producto no existe');
     }
 }
 
 
-export async function quitarStockProducto(id:number, stock:number): Promise<void>{
-    if(!Number.isSafeInteger(id) || stock <= 0){
-        throw new HttpError(400, "El stock a quitar debe ser mayor a 0")
-    }
-    if(!await quitarStock(id, stock)){
-         throw new HttpError(409, "El stock actual del producto es menor al valor ingresado")
-    }
+export async function quitarStockProductoServicio(id: number, cantidad: number): Promise<number> {
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    throw new HttpError(400, 'El ID debe ser un entero positivo');
+  }
+
+  if (!Number.isSafeInteger(cantidad) || cantidad <= 0) {
+    throw new HttpError(400, 'La cantidad debe ser un entero positivo');
+  }
+
+  const resultado = await quitarStock(id, cantidad);
+
+  switch (resultado.estado) {
+    case 'no-encontrado':
+      throw new HttpError(404, 'El producto no existe');
+
+    case 'stock-insuficiente':
+      throw new HttpError(409, 'El stock disponible es insuficiente');
+
+    case 'actualizado':
+      return resultado.stock;
+  }
 }

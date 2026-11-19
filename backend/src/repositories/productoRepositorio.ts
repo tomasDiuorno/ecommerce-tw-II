@@ -1,5 +1,7 @@
 import { pool } from '../config/database.js';
 import type { Producto } from '../models/productoModel.js';
+import { ResultadoQuitarStock } from '../models/resultadoQuitarStock.js';
+import { ResultadoStock } from '../models/resultadoStock.js';
 
 const SELECT_PRODUCTOS = `
   SELECT
@@ -55,10 +57,67 @@ export async function agregarStock(id:number, stock:number):Promise<boolean>{
    return resultado.rowCount === 1;
 }
 
-export async function quitarStock(id:number, stock:number):Promise<boolean>{
-  const resultado =await pool.query(
-    `UPDATE productos SET stock = stock - $1 WHERE id = $2 AND stock >= $1`,
-     [stock, id]
+export async function quitarStock(
+  id: number,
+  cantidad: number,
+): Promise<ResultadoQuitarStock> {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    const resultado = await client.query<{ stock: number }>(
+      'SELECT stock FROM productos WHERE id = $1 FOR UPDATE',
+      [id],
+    );
+
+    const producto = resultado.rows[0];
+
+    if (!producto) {
+      await client.query('ROLLBACK');
+      return { estado: 'no-encontrado' };
+    }
+
+    if (producto.stock < cantidad) {
+      await client.query('ROLLBACK');
+      return { estado: 'stock-insuficiente' };
+    }
+
+    const actualizado = await client.query<{ stock: number }>(
+      `UPDATE productos
+       SET stock = stock - $1,
+        disponible = CASE
+      WHEN stock - $1 = 0 THEN false
+      ELSE disponible
+    END
+       WHERE id = $2
+       RETURNING stock`,
+      [cantidad, id],
+    );
+
+    const productoActualizado = actualizado.rows[0];
+
+    if (!productoActualizado) {
+      throw new Error('No se pudo actualizar el producto bloqueado');
+    }
+
+    await client.query('COMMIT');
+
+    return {
+      estado: 'actualizado',
+      stock: productoActualizado.stock,
+    };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+export async function deshabilitarDisponibilidad(id: number): Promise<void>{
+   const resultado =await pool.query(
+    `UPDATE productos SET disponible = false WHERE id = $1`,
+     [id]
   );
-   return resultado.rowCount === 1;
 }

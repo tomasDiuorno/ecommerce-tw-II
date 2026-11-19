@@ -4,7 +4,8 @@ import {
   obtenerDestacados,
   obtenerProductoPorIdServicio,
   obtenerTodosLosProductosServicio,
-  agregarStockServicio
+  agregarStockServicio,
+  quitarStockProductoServicio
 } from '../services/productoService.js';
 import { HttpError } from '../middlewares/HttpError.js';
 
@@ -48,25 +49,41 @@ export async function obtenerProductoPorId(req: Request, res: Response, next: Ne
 
   export async function agregarStock(req: Request, res:Response, next: NextFunction){
     const id = verificarNumeroYPositivo(req.params.id);
-    const stock = verificarNumeroYPositivo(req.body.stock);
+     const stock = verificarNumeroYPositivo(req.body?.stock);
     try{
    await agregarStockServicio(id, stock);
+   res.status(204).send();
     } catch(error){
       next(error);
     }
-
+    
+  }
+  export async function quitarStock(req: Request, res:Response, next: NextFunction){
+    const id = verificarNumeroYPositivo(req.params.id);
+    const stock = verificarNumeroYPositivo(req.body?.stock);
+    try{
+   await quitarStockProductoServicio(id, stock);
+   res.status(204).send();
+    } catch(error){
+      next(error);
+    }
+    
   }
 
 function verificarNumeroYPositivo(valor: unknown): number {
-      if (typeof valor !== 'string' || !/^\d+$/.test(valor)) {
+  if (typeof valor !== 'string' && typeof valor !== 'number') {
     throw new HttpError(400, 'El valor debe ser un número entero positivo');
   }
 
-  const valorVerificado = Number(valor);
-
-  if (!Number.isSafeInteger(valorVerificado) || valorVerificado <= 0) {
+  if (typeof valor === 'string' && !/^\d+$/.test(valor)) {
     throw new HttpError(400, 'El valor debe ser un número entero positivo');
   }
 
-  return valorVerificado;
+  const numero = Number(valor);
+
+  if (!Number.isSafeInteger(numero) || numero <= 0) {
+    throw new HttpError(400, 'El valor debe ser un número entero positivo');
   }
+
+  return numero;
+}

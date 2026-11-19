@@ -9,6 +9,18 @@ export class ProductosAdminService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost:3000/api/productos';
 
+  obtenerPorId(id: number): Observable<Producto> {
+    return this.http.get<Producto>(`${this.apiUrl}/${id}`);
+  }
+
+  agregarStock(id: number, stock: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/agregarStock/${id}`, { stock });
+  }
+
+  quitarStock(id: number, stock: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/quitarStock/${id}`, { stock });
+  }
+
      cargarTodosLosProductos(): Observable<Producto[]> {
         return this.http.get<Producto[]>(
           `${this.apiUrl}/todosLosProductos`,
