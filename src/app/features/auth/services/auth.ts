@@ -10,6 +10,7 @@ export class AuthService {
   private apiUrl = 'http://localhost:3000/api/usuarios';
 
   usuarioLogueado = signal<UsuarioAutenticado | null>(null);
+  sesionCargada = signal(false);
 
   signup(usuario: Usuario): Observable<any> {
     return this.http.post(`${this.apiUrl}/signup`, usuario);
@@ -17,12 +18,13 @@ export class AuthService {
 
   signin(email: string, contrasenia: string): Observable<RespuestaAutenticacion> {
     return this.http.post<RespuestaAutenticacion>(
-      `${this.apiUrl}/signin`, 
+      `${this.apiUrl}/signin`,
       { email, contrasenia },
-      {withCredentials: true}
+      { withCredentials: true }
     ).pipe(
       tap(respuesta => {
         this.usuarioLogueado.set(respuesta.usuario);
+        this.sesionCargada.set(true);
       })
     );
   }
@@ -30,7 +32,7 @@ export class AuthService {
   cargarUsuarioActual(): Observable<UsuarioAutenticado | null> {
     return this.http.get<UsuarioAutenticado>(
       `${this.apiUrl}/me`,
-      {withCredentials: true}
+      { withCredentials: true }
     ).pipe(
       tap(usuario => {
         this.usuarioLogueado.set(usuario);
@@ -38,18 +40,22 @@ export class AuthService {
       catchError(() => {
         this.usuarioLogueado.set(null);
         return of(null);
+      }),
+      tap(() => {
+        this.sesionCargada.set(true);
       })
-    )
+    );
   }
 
-  logout(): Observable<{mensaje: string}> {
-    return this.http.post<{mensaje: string}>(
+  logout(): Observable<{ mensaje: string }> {
+    return this.http.post<{ mensaje: string }>(
       `${this.apiUrl}/logout`,
       {},
-      {withCredentials: true}
+      { withCredentials: true }
     ).pipe(
       tap(() => {
         this.usuarioLogueado.set(null);
+        this.sesionCargada.set(true);
       })
     );
   }
