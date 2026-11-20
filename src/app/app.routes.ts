@@ -7,6 +7,7 @@ import { DetalleProducto } from './features/catalogo/pages/detalle-producto/deta
 import { Signin } from './features/auth/pages/signin/signin';
 import { guestGuard } from './core/guards/guest.guard';
 import { authGuard } from './core/guards/auth.guard';
+import { Perfil } from './features/auth/pages/perfil/perfil';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -15,6 +16,7 @@ export const routes: Routes = [
   { path: 'productos/:id', component: DetalleProducto },
   { path: 'productos', redirectTo: 'catalogo', pathMatch: 'full' },
   { path: 'carrito', component: Carrito },
+  { path: 'perfil', component: Perfil },
   { path: 'signup', component: Signup, canActivate: [guestGuard] },
   {
     path: 'admin',
