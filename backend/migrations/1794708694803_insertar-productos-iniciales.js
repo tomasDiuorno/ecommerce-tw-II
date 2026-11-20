@@ -38,5 +38,19 @@ export function up(pgm) {
 
 /** @param {import('node-pg-migrate').MigrationBuilder} pgm */
 export function down(pgm) {
-  pgm.sql('DELETE FROM productos;');
+  pgm.sql(`
+    DELETE FROM productos
+    WHERE nombre IN (
+      'Mouse',
+      'Teclado',
+      'Auriculares',
+      'Monitor 24"',
+      'Webcam',
+      'Parlante Bluetooth',
+      'Pendrive 64GB',
+      'Cargador USB-C',
+      'Tablet 10"',
+      'Smartwatch'
+    );
+  `);
 }

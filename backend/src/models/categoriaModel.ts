@@ -1,7 +1,7 @@
 export interface Categoria{
     id: number,
     nombre: string,
-    imagen: string,
+    imagen: string | null,
     color: string
 
 }

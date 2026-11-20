@@ -13,4 +13,10 @@ export const routes: Routes = [
     { path: 'productos', redirectTo: 'catalogo', pathMatch: 'full' },
     { path: 'carrito', component: Carrito },
     { path: 'signup', component: Signup },
+    {
+  path: 'admin',
+  loadChildren: () =>
+    import('./features/admin/admin.routes')
+      .then(m => m.adminRoutes),
+},
 ];
