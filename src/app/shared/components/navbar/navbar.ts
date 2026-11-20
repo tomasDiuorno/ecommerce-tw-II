@@ -3,6 +3,7 @@ import { CarritoService } from '../../../features/carrito/services/carrito';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CatalogoService } from '../../../features/catalogo/services/catalogo';
 import { form, FormField } from '@angular/forms/signals';
+import { AuthService } from '../../../features/auth/services/auth';
 
 @Component({
   imports: [RouterLink, RouterLinkActive, FormField],
@@ -14,6 +15,8 @@ export class Navbar {
 private readonly router = inject(Router);
 private readonly carritoService = inject(CarritoService);
 private readonly catalogoService = inject(CatalogoService);
+private readonly authService = inject(AuthService);
+protected readonly usuarioLogueado = this.authService.usuarioLogueado;
 
 private readonly modeloBusqueda = signal({ texto: '' });
 protected readonly formBusqueda = form(this.modeloBusqueda);

@@ -14,6 +14,18 @@ export const routes: Routes = [
   { path: 'carrito', component: Carrito },
   { path: 'signup', component: Signup },
   {
+  path: 'checkout',
+  loadComponent: () =>
+    import('./features/compra/pages/checkout/checkout')
+      .then(m => m.Checkout)
+},
+{
+  path: 'compra-exitosa',
+  loadComponent: () =>
+    import('./features/compra/pages/checkout/compra-exitosa/compra-exitosa')
+      .then(m => m.CompraExitosa)
+},
+  {
     path: 'admin',
     loadChildren: () =>
       import('./features/admin/admin.routes')

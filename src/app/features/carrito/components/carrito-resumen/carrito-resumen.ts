@@ -30,6 +30,8 @@ export class CarritoResumen {
 
   direccionABuscar = output<string>(); 
 
+confirmarPedido = output<void>();
+
   buscadorControl = new FormControl(''); // El control del input de texto
 
   constructor() {

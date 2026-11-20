@@ -137,7 +137,8 @@
       <button
         type="button"
         class="mt-2 cursor-pointer rounded-full bg-indigo-500 px-6 py-2 text-sm text-white transition hover:bg-indigo-600"
-      >
+      routerLink="/signin"
+(click)="cerrarTodo()">
         Login
       </button>
     </div>
@@ -227,9 +228,20 @@
         </span>
       </div>
     </a>
-
-    <button type="button" class="cursor-pointer rounded-full bg-indigo-500 px-8 py-2 text-white transition hover:bg-indigo-600">
+@if (usuarioLogueado()) {
+  <span class="font-medium text-indigo-600">
+    Hola, {{ usuarioLogueado()?.nombre }}
+  </span>
+} @else {
+  <a
+    routerLink="/signin"
+    class="cursor-pointer rounded-full bg-indigo-500 px-8 py-2 text-white transition hover:bg-indigo-600"
+  >
+    Login
+  </a>
+}
+    <!--<button type="button" class="cursor-pointer rounded-full bg-indigo-500 px-8 py-2 text-white transition hover:bg-indigo-600" routerLink="/signin">
       Login
-    </button>
+    </button>-->
   </div>
 </nav>
