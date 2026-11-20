@@ -39,6 +39,17 @@
       </svg>
     </button>
 
+    <a routerLink="/carrito" (click)="cerrarTodo()" aria-label="Carrito">
+    <div class="relative">
+      <svg width="18" height="18" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M.583.583h2.333l1.564 7.81a1.17 1.17 0 0 0 1.166.94h5.67a1.17 1.17 0 0 0 1.167-.94l.933-4.893H3.5m2.333 8.75a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0m6.417 0a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0" stroke="#615fff" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="absolute -top-2 -right-3 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-indigo-500 px-1 text-xs text-white">
+        {{ cantidad() }}
+      </span>
+    </div>
+    </a>
+
     <button
       type="button"
       aria-label="Menú"
@@ -124,22 +135,9 @@
         }
       </div>
 
-      <a href="#" class="block py-2">Acerca de</a>
-      <a href="#" class="block py-2">Contacto</a>
-
-      <a routerLink="/carrito" (click)="cerrarTodo()" class="flex items-center gap-2 py-2">
-        Carrito
-        <span class="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-indigo-500 px-1 text-xs text-white">
-          {{ cantidad() }}
-        </span>
-      </a>
-
-      <button
-        type="button"
-        class="mt-2 cursor-pointer rounded-full bg-indigo-500 px-6 py-2 text-sm text-white transition hover:bg-indigo-600"
-      >
+      <a routerLink="/signin" (click)="cerrarTodo()" class="mt-2 inline-block cursor-pointer rounded-full bg-indigo-500 px-6 py-2 text-sm text-white transition hover:bg-indigo-600">
         Login
-      </button>
+      </a>
     </div>
   }
 
@@ -196,9 +194,6 @@
       }
     </div>
 
-    <a href="#">Acerca de</a>
-    <a href="#">Contacto</a>
-
       <form class="hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full"
      role="search"
     (submit)="buscar($event)">
@@ -228,8 +223,11 @@
       </div>
     </a>
 
-    <button type="button" class="cursor-pointer rounded-full bg-indigo-500 px-8 py-2 text-white transition hover:bg-indigo-600">
+    <a routerLink="/signin"
+      (click)="cerrarTodo()"
+      class="mt-2 inline-block cursor-pointer rounded-full bg-indigo-500 px-6 py-2 text-sm text-white transition hover:bg-indigo-600"
+    >
       Login
-    </button>
+    </a>
   </div>
 </nav>
