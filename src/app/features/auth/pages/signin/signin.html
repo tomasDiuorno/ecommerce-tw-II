@@ -1,0 +1,29 @@
+<div class="max-w-md mx-auto mt-16 px-6">
+    <h1 class="text-3xl font-medium mb-6">Iniciar sesión</h1>
+
+    <form (ngSubmit)="iniciarSesion()" class="flex flex-col gap-4">
+
+        <input name="email" type="email" [(ngModel)]="email" placeholder="Email" required
+            class="border border-gray-300 px-3 py-2 rounded focus:outline-indigo-500">
+
+        <input name="contrasenia" type="password" [(ngModel)]="contrasenia" placeholder="Contraseña" required
+            class="border border-gray-300 px-3 py-2 rounded focus:outline-indigo-500">
+
+        @if (error()) {
+        <p class="text-red-600 text-sm">{{ error() }}</p>
+        }
+
+        <button type="submit"
+            class="py-3 bg-indigo-500 text-white font-medium rounded hover:bg-indigo-600 cursor-pointer">
+            Iniciar sesión
+        </button>
+
+    </form>
+
+    <p class="text-sm text-gray-500 mt-4">
+        ¿Todavía no tenés cuenta?
+        <a routerLink="/signup" class="text-indigo-500 hover:underline">
+            Registrate
+        </a>
+    </p>
+</div>
