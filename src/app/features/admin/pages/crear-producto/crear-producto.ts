@@ -27,7 +27,7 @@ readonly categorias = this.catalogoService.categorias;
 readonly cargandoCategorias = this.catalogoService.cargando;
 readonly errorCategorias = this.catalogoService.error;
 
-  readonly formulario = this.fb.nonNullable.group({
+readonly formulario = this.fb.nonNullable.group({
     nombre: ['',[ Validators.required, Validators.pattern(/\S/), Validators.maxLength(150),],],
     descripcion: ['',[Validators.required, Validators.pattern(/\S/)],],
     categoriaId: [0,[Validators.required, Validators.min(1)],],
@@ -47,14 +47,8 @@ readonly errorCategorias = this.catalogoService.error;
 
     this.errorGuardado.set(null);
 
-            if (
-        this.cargandoCategorias() ||
-        this.errorCategorias() !== null ||
-        this.categorias().length === 0
-        ) {
-        this.errorGuardado.set(
-            'Necesitás tener categorías disponibles para crear el producto.',
-        );
+        if (this.cargandoCategorias() || this.errorCategorias() !== null || this.categorias().length === 0) {
+        this.errorGuardado.set('Necesitás tener categorías disponibles para crear el producto.',);
         return;
         }
 
@@ -66,7 +60,7 @@ readonly errorCategorias = this.catalogoService.error;
 
     const valores = this.formulario.getRawValue();
 
-    const datos = {
+    const datos = { 
         ...valores,
         nombre: valores.nombre.trim(),
         descripcion: valores.descripcion.trim(),
@@ -76,18 +70,10 @@ readonly errorCategorias = this.catalogoService.error;
     this.guardando.set(true);
 
     this.productosAdminService.crearProducto(datos)
-        .pipe(
-        finalize(() => this.guardando.set(false)),
-        )
-        .subscribe({
-        next: () => {
-            void this.router.navigate(['/admin/productos']);
-        },
-        error: () => {
-            this.errorGuardado.set(
-            'No se pudo completar la solicitud. Revisá el listado antes de reintentar.',
-            );
-        },
+        .pipe(finalize(() => this.guardando.set(false)),)
+        .subscribe({next: () => {void this.router.navigate(['/admin/productos']);},
+            error: () => {this.errorGuardado.set('No se pudo completar la solicitud. Revisá el listado antes de reintentar.',);
+            },
         });
     }
 }

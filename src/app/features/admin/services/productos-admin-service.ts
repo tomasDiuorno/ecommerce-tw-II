@@ -21,13 +21,11 @@ export class ProductosAdminService {
     return this.http.post<void>(`${this.apiUrl}/quitarStock/${id}`, { stock });
   }
 
-     cargarTodosLosProductos(): Observable<Producto[]> {
-        return this.http.get<Producto[]>(
-          `${this.apiUrl}/todosLosProductos`,
-        );
-      }
+  cargarTodosLosProductos(): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.apiUrl}/todosLosProductos`,);
+  }
 
-      crearProducto(datos: CrearProducto): Observable<Producto> {
-        return this.http.post<Producto>(this.apiUrl, datos);
-      }
+  crearProducto(datos: CrearProducto): Observable<Producto> {
+    return this.http.post<Producto>(this.apiUrl, datos);
+  }
 }
