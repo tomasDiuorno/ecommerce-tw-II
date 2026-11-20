@@ -53,22 +53,22 @@
         <h2 id="titulo-movimiento" class="mt-6 text-xl font-semibold text-gray-900">Actualizar existencias</h2>
         <p class="mt-2 text-sm leading-6 text-gray-600">Ingresá la cantidad de unidades que querés agregar o quitar.</p>
 
-        <form [formGroup]="formularioStock" (ngSubmit)="agregarStock()" class="mt-6" [attr.aria-busy]="guardando()">
+        <form novalidate (submit)="agregarStock($event)" class="mt-6" [attr.aria-busy]="guardando()">
           <fieldset [disabled]="guardando()">
             <legend class="sr-only">Cantidad y operación de stock</legend>
             <label for="cantidad-stock" class="block text-sm font-semibold text-gray-900">Cantidad de unidades <span class="font-normal text-gray-500">(obligatorio)</span></label>
-            <input id="cantidad-stock" type="number" formControlName="cantidad" min="1" step="1" required inputmode="numeric" aria-describedby="ayuda-cantidad error-cantidad" [attr.aria-invalid]="formularioStock.controls.cantidad.invalid && formularioStock.controls.cantidad.touched ? 'true' : null" class="mt-2 min-h-12 w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-base tabular-nums text-gray-900 focus:border-indigo-600 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600 disabled:bg-gray-100" />
+            <input id="cantidad-stock" type="number" [formField]="formularioStock.cantidad" step="1" inputmode="numeric" aria-describedby="ayuda-cantidad error-cantidad" [attr.aria-invalid]="formularioStock.cantidad().invalid() && formularioStock.cantidad().touched() ? 'true' : null" class="mt-2 min-h-12 w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-base tabular-nums text-gray-900 focus:border-indigo-600 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600 disabled:bg-gray-100" />
             <p id="ayuda-cantidad" class="mt-2 text-xs leading-5 text-gray-600">Usá un número entero mayor que cero. Para quitar, no puede superar el stock actual.</p>
             <div id="error-cantidad" aria-live="polite">
-              @if (formularioStock.controls.cantidad.invalid && formularioStock.controls.cantidad.touched) {
+              @if (formularioStock.cantidad().invalid() && formularioStock.cantidad().touched()) {
                 <p class="mt-2 text-sm font-medium text-rose-700">Ingresá una cantidad válida: un número entero mayor que cero.</p>
               }
             </div>
             <div class="mt-6 grid gap-3 sm:grid-cols-2">
-              <button type="button" (click)="quitarStock()" [disabled]="formularioStock.invalid || detalle.stock === 0 || (formularioStock.controls.cantidad.value ?? 0) > detalle.stock" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-rose-300 px-4 py-3 text-sm font-semibold text-rose-700 transition-colors enabled:hover:bg-rose-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-500 motion-reduce:transition-none"><span aria-hidden="true">−</span> Quitar stock</button>
-              <button type="submit" [disabled]="formularioStock.invalid" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition-colors enabled:hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 motion-reduce:transition-none"><span aria-hidden="true">+</span> Agregar stock</button>
+              <button type="button" (click)="quitarStock()" [disabled]="formularioStock().invalid() || detalle.stock === 0 || (formularioStock.cantidad().value() ?? 0) > detalle.stock" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-rose-300 px-4 py-3 text-sm font-semibold text-rose-700 transition-colors enabled:hover:bg-rose-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-500 motion-reduce:transition-none"><span aria-hidden="true">−</span> Quitar stock</button>
+              <button type="submit" [disabled]="formularioStock().invalid()" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition-colors enabled:hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 motion-reduce:transition-none"><span aria-hidden="true">+</span> Agregar stock</button>
             </div>
-            @if ((formularioStock.controls.cantidad.value ?? 0) > detalle.stock && formularioStock.valid) {
+            @if ((formularioStock.cantidad().value() ?? 0) > detalle.stock && formularioStock().valid()) {
               <p class="mt-3 text-sm text-amber-800">La cantidad supera las existencias. Podés agregarla, pero no quitarla.</p>
             }
           </fieldset>

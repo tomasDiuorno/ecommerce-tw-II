@@ -1,33 +1,41 @@
-import { Component, ElementRef, inject, signal } from '@angular/core';
-import type { OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  apply,
+  form,
+  FormField,
+  required,
+  validate,
+} from '@angular/forms/signals';
+import {
+  descripcionProductoSchema,
+  nombreProductoSchema,
+  precioProductoSchema,
+} from '../../forms/producto.schemas';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-
+import { EditarProductoFormulario } from '../../models/EditarProductoFormulario';
 import { CatalogoService } from '../../../catalogo/services/catalogo';
 import { ProductosAdminService } from '../../services/productos-admin-service';
 
+
+
 @Component({
   selector: 'app-editar-producto',
-  imports: [ReactiveFormsModule, RouterLink],
+ imports: [FormField, RouterLink],
   templateUrl: './editar-producto.html',
   styleUrl: './editar-producto.css',
 })
 export class EditarProducto implements OnInit {
-  private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly productosService = inject(ProductosAdminService);
   private readonly catalogoService = inject(CatalogoService);
-  private readonly elemento = inject<ElementRef<HTMLElement>>(ElementRef);
 
   private readonly productoId = Number(
     this.route.snapshot.paramMap.get('id'),
   );
+
+  private readonly stockProducto = signal(0);
 
   readonly categorias = this.catalogoService.categorias;
   readonly cargandoProducto = signal(false);
@@ -39,30 +47,37 @@ export class EditarProducto implements OnInit {
   readonly errorGuardado = signal<string | null>(null);
   readonly guardando = signal(false);
 
-  readonly formulario = this.fb.nonNullable.group({
-    nombre: ['', [
-      Validators.required,
-      Validators.pattern(/\S/),
-      Validators.maxLength(150),
-    ]],
-    descripcion: ['', [
-      Validators.required,
-      Validators.pattern(/\S/),
-    ]],
-    categoriaId: [0, [
-      Validators.required,
-      Validators.min(1),
-    ]],
-    precio: [0, [
-      Validators.required,
-      Validators.min(0),
-      Validators.max(99999999.99),
-      Validators.pattern(/^\d+(\.\d{1,2})?$/),
-    ]],
-    imagen: [''],
-    disponible: [false],
-    destacado: [false],
+private readonly modelo = signal<EditarProductoFormulario>({
+  nombre: '',
+  descripcion: '',
+  categoriaId: '',
+  precio: 0,
+  imagen: '',
+  disponible: false,
+  destacado: false,
+});
+
+readonly formulario = form(this.modelo, campos => {
+  apply(campos.nombre, nombreProductoSchema);
+  apply(campos.descripcion, descripcionProductoSchema);
+  apply(campos.precio, precioProductoSchema);
+
+  validate(campos.disponible, ({ value }) => {
+    return value() && this.stockProducto() <= 0
+      ? { kind: 'sinStock', message: 'No podés activar un producto sin stock. Agregá unidades desde la gestión de stock.' }
+      : null;
   });
+
+  required(campos.categoriaId);
+
+  validate(campos.categoriaId, ({ value }) => {
+    const id = Number(value());
+
+    return this.categorias().some(categoria => categoria.id === id)
+      ? null
+      : { kind: 'categoriaInvalida' };
+  });
+});
 
   ngOnInit(): void {
     this.cargarDatos();
@@ -93,17 +108,18 @@ export class EditarProducto implements OnInit {
         finalize(() => this.cargandoProducto.set(false)),
       )
       .subscribe({
-        next: (producto) => {
-          this.formulario.reset({
-            nombre: producto.nombre,
-            descripcion: producto.descripcion,
-            categoriaId: producto.categoriaId,
-            precio: producto.precio,
-            imagen: producto.imagen ?? '',
-            disponible: producto.disponible,
-            destacado: producto.destacado,
-          });
-        },
+        next: producto => {
+  this.stockProducto.set(producto.stock);
+  this.formulario().reset({
+    nombre: producto.nombre,
+    descripcion: producto.descripcion,
+    categoriaId: String(producto.categoriaId),
+    precio: producto.precio,
+    imagen: producto.imagen ?? '',
+    disponible: producto.disponible,
+    destacado: producto.destacado,
+  });
+},
         error: () => {
           this.errorProducto.set(
             'No se pudo cargar el producto.',
@@ -112,68 +128,69 @@ export class EditarProducto implements OnInit {
       });
   }
 
-  guardar(): void {
-    if (
-      this.guardando() ||
-      this.cargandoProducto() ||
-      this.cargandoCategorias() ||
-      this.errorProducto() ||
-      this.errorCategorias()
-    ) {
-      return;
-    }
+ guardar(evento: Event): void {
+  evento.preventDefault();
 
-    this.errorGuardado.set(null);
-
-    const categoriaExiste = this.categorias().some(
-      categoria =>
-        categoria.id === this.formulario.controls.categoriaId.value,
-    );
-
-    if (!categoriaExiste) {
-      this.formulario.controls.categoriaId.setErrors({
-        categoriaInvalida: true,
-      });
-    }
-
-    if (this.formulario.invalid) {
-      this.formulario.markAllAsTouched();
-      this.errorGuardado.set('Revisá los campos del formulario.');
-
-      this.elemento.nativeElement
-        .querySelector<HTMLElement>(
-          'input.ng-invalid, textarea.ng-invalid, select.ng-invalid',
-        )
-        ?.focus();
-
-      return;
-    }
-
-    const valores = this.formulario.getRawValue();
-
-    const datos = {
-      ...valores,
-      id: this.productoId,
-      nombre: valores.nombre.trim(),
-      descripcion: valores.descripcion.trim(),
-      imagen: valores.imagen.trim() || null,
-    };
-
-    this.guardando.set(true);
-
-    this.productosService.editarProducto(datos)
-      .pipe(
-        finalize(() => this.guardando.set(false)),
-      )
-      .subscribe({
-        next: () => this.cancelar(),
-        error: () => {
-          this.errorGuardado.set(
-            'No se pudo confirmar el guardado. Revisá el listado antes de reintentar.',
-          );
-        },
-      });
+  if (
+    this.guardando() ||
+    this.cargandoProducto() ||
+    this.cargandoCategorias() ||
+    this.errorProducto() ||
+    this.errorCategorias()
+  ) {
+    return;
   }
+
+  this.errorGuardado.set(null);
+  this.formulario().markAsTouched();
+
+  if (this.formulario().invalid()) {
+    this.errorGuardado.set('Revisá los campos del formulario.');
+
+    const campos = [
+      this.formulario.nombre,
+      this.formulario.descripcion,
+      this.formulario.categoriaId,
+      this.formulario.precio,
+      this.formulario.disponible,
+    ];
+
+    const primerCampoInvalido = campos.find(campo => campo().invalid());
+    primerCampoInvalido?.().focusBoundControl();
+
+    return;
+  }
+
+  const valores = this.modelo();
+
+  if (valores.precio === null) {
+    this.errorGuardado.set('Completá el precio del producto.');
+    return;
+  }
+
+  const datos = {
+    ...valores,
+    id: this.productoId,
+    categoriaId: Number(valores.categoriaId),
+    precio: valores.precio,
+    nombre: valores.nombre.trim(),
+    descripcion: valores.descripcion.trim(),
+    imagen: valores.imagen.trim() || null,
+  };
+
+  this.guardando.set(true);
+
+  this.productosService.editarProducto(datos).pipe(
+    finalize(() => this.guardando.set(false)),
+  ).subscribe({
+    next: () => this.cancelar(),
+    error: () => {
+      this.errorGuardado.set(
+        'No se pudo confirmar el guardado. Revisá el listado antes de reintentar.',
+      );
+    },
+  });
+}
 
   cancelar(): void {
     void this.router.navigate(['/admin/productos']);

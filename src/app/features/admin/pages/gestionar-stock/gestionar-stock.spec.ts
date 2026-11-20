@@ -7,7 +7,7 @@ import { Producto } from '../../../../shared/models/producto';
 
 const api = 'http://localhost:3000/api/productos';
 const producto: Producto = {
-  id: 1, nombre: 'Teclado', descripcion: 'Teclado de prueba', categoria: 'Periféricos',
+  id: 1, nombre: 'Teclado', descripcion: 'Teclado de prueba', categoria: 'Periféricos', categoriaId: 1,
   precio: 100, imagen: null, stock: 5, disponible: false, destacado: false,
 };
 
@@ -32,7 +32,7 @@ describe('GestionarStock', () => {
   afterEach(() => http.verify());
 
   it('agrega una sola vez y conserva el estado confirmado por el servidor', () => {
-    component.formularioStock.controls.cantidad.setValue(3);
+    component.formularioStock.cantidad().value.set(3);
     component.agregarStock();
     component.agregarStock();
     const peticion = http.expectOne(`${api}/agregarStock/1`);
@@ -47,7 +47,7 @@ describe('GestionarStock', () => {
 
   it('quita stock por la ruta correcta y refleja la desactivación', () => {
     component.producto.set({ ...producto, disponible: true });
-    component.formularioStock.controls.cantidad.setValue(5);
+    component.formularioStock.cantidad().value.set(5);
     component.quitarStock();
     const peticion = http.expectOne(`${api}/quitarStock/1`);
     expect(peticion.request.body).toEqual({ stock: 5 });
@@ -58,16 +58,16 @@ describe('GestionarStock', () => {
   });
 
   it('rechaza decimales y egresos superiores al stock sin enviar peticiones', () => {
-    component.formularioStock.controls.cantidad.setValue(1.5);
+    component.formularioStock.cantidad().value.set(1.5);
     component.agregarStock();
-    component.formularioStock.controls.cantidad.setValue(6);
+    component.formularioStock.cantidad().value.set(6);
     component.quitarStock();
     http.expectNone(request => request.method === 'POST');
     expect(component.error()).toContain('supera');
   });
 
   it('no invita a repetir una operación confirmada si falla la recarga', () => {
-    component.formularioStock.controls.cantidad.setValue(2);
+    component.formularioStock.cantidad().value.set(2);
     component.agregarStock();
     http.expectOne(`${api}/agregarStock/1`).flush(null, { status: 204, statusText: 'No Content' });
     http.expectOne(`${api}/1`).flush({}, { status: 500, statusText: 'Server Error' });

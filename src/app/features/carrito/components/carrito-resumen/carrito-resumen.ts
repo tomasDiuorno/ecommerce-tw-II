@@ -1,12 +1,12 @@
-import { Component, effect, input, model, signal } from '@angular/core';
-import { outputFromObservable } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Component, input, linkedSignal, model, signal } from '@angular/core';
+import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
+import { form, FormField } from '@angular/forms/signals';
 
 import { DineroPipe } from '../../../../shared/pipes/dinero-pipe';
 import { DireccionSugerida } from '../../services/direcciones';
 
 @Component({
-  imports: [DineroPipe, ReactiveFormsModule],
+  imports: [DineroPipe, FormField],
   selector: 'app-carrito-resumen',
   styleUrl: './carrito-resumen.css',
   templateUrl: './carrito-resumen.html',
@@ -25,28 +25,25 @@ export class CarritoResumen {
   readonly direccionSeleccionada = model<string | null>(null);
 
   protected readonly mostrarDireccion = signal(false);
-  protected readonly codigoPostalControl = new FormControl('', { nonNullable: true });
-  protected readonly buscadorControl = new FormControl('', { nonNullable: true });
+  private readonly modeloBusqueda = signal({ texto: '' });
+  private readonly modeloCodigoPostal = linkedSignal(() => ({ texto: this.codigoPostal() }));
 
-  // Cada cambio del buscador se emite al padre;
-  readonly direccionABuscar = outputFromObservable(this.buscadorControl.valueChanges);
+  protected readonly formularioBusqueda = form(this.modeloBusqueda);
+  protected readonly formularioCodigoPostal = form(this.modeloCodigoPostal);
 
-  constructor() {
-    // Mantiene el input del formulario alineado con el valor que viene del padre.
-    effect(() =>
-      this.codigoPostalControl.setValue(this.codigoPostal(), { emitEvent: false }),
-    );
-  }
-
+  // Comunica el texto al padre, que administra la espera y la consulta HTTP.
+  readonly direccionABuscar = outputFromObservable(
+    toObservable(this.formularioBusqueda.texto().value),
+  );
   aplicarCodigoPostal(): void {
-    this.codigoPostal.set(this.codigoPostalControl.value.trim().toUpperCase());
+    this.codigoPostal.set(this.formularioCodigoPostal.texto().value().trim().toUpperCase());
   }
 
   toggleDireccion(): void {
     this.mostrarDireccion.update(estado => !estado);
 
     if (!this.mostrarDireccion()) {
-      this.buscadorControl.setValue(''); // ya notifica al padre
+      this.formularioBusqueda().reset({ texto: '' }); // ya notifica al padre
     }
   }
 
@@ -54,6 +51,6 @@ export class CarritoResumen {
   this.direccionSeleccionada.set(sugerida.direccion);
   this.codigoPostal.set(sugerida.codigoPostal?.trim().toUpperCase() ?? '');
   this.mostrarDireccion.set(false);
-  this.buscadorControl.setValue('');
+  this.formularioBusqueda().reset({ texto: '' });
 }
 }

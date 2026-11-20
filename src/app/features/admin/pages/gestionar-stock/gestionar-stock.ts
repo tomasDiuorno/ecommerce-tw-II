@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { form, FormField, max, min, required, validate } from '@angular/forms/signals';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, distinctUntilChanged, EMPTY, finalize, map, Subscription, switchMap } from 'rxjs';
@@ -9,7 +9,7 @@ import { Producto } from '../../../../shared/models/producto';
 import { ProductosAdminService } from '../../services/productos-admin-service';
 
 @Component({
-  imports: [CurrencyPipe, NgOptimizedImage, ReactiveFormsModule, RouterLink],
+  imports: [CurrencyPipe, NgOptimizedImage, FormField, RouterLink],
   selector: 'app-gestionar-stock',
   styleUrl: './gestionar-stock.css',
   templateUrl: './gestionar-stock.html',
@@ -26,15 +26,19 @@ export class GestionarStock implements OnInit {
   readonly error = signal<string | null>(null);
   readonly mensajeExito = signal<string | null>(null);
 
-  readonly formularioStock = new FormGroup({
-    cantidad: new FormControl<number | null>(null, [
-      Validators.required,
-      Validators.min(1),
-      Validators.max(Number.MAX_SAFE_INTEGER),
-      Validators.pattern(/^[0-9]+$/),
-    ]),
-  });
+  private readonly modeloStock = signal<{ cantidad: number | null }>({ cantidad: null });
 
+  readonly formularioStock = form(this.modeloStock, campos => {
+    required(campos.cantidad);
+    min(campos.cantidad, 1);
+    max(campos.cantidad, Number.MAX_SAFE_INTEGER);
+    validate(campos.cantidad, ({ value }) => {
+      const cantidad = value();
+      return cantidad === null || Number.isSafeInteger(cantidad)
+        ? null
+        : { kind: 'cantidadInvalida' };
+    });
+  });
   ngOnInit(): void {
   const parametro = this.route.snapshot.paramMap.get('id');
   const id = Number(parametro);
@@ -67,7 +71,8 @@ export class GestionarStock implements OnInit {
     });
 }
 
-  agregarStock(): void {
+  agregarStock(evento?: Event): void {
+    evento?.preventDefault();
     this.actualizarStock('agregar');
   }
 
@@ -81,9 +86,9 @@ export class GestionarStock implements OnInit {
 
     this.error.set(null);
     this.mensajeExito.set(null);
-    this.formularioStock.markAllAsTouched();
-    const cantidad = this.formularioStock.controls.cantidad.value;
-    if (this.formularioStock.invalid || cantidad === null || !Number.isSafeInteger(cantidad) || cantidad <= 0) return;
+    this.formularioStock().markAsTouched();
+    const cantidad = this.formularioStock.cantidad().value();
+    if (this.formularioStock().invalid() || cantidad === null || !Number.isSafeInteger(cantidad) || cantidad <= 0) return;
 
     if (tipo === 'quitar' && cantidad > producto.stock) {
       this.error.set('La cantidad a quitar supera el stock disponible.');
@@ -99,7 +104,7 @@ export class GestionarStock implements OnInit {
     this.operacion = peticion.pipe(
       switchMap(() => {
         actualizado = true;
-        this.formularioStock.reset();
+        this.formularioStock().reset({ cantidad: null });
         return this.productosService.obtenerPorId(producto.id);
       }),
       finalize(() => this.guardando.set(false)),
