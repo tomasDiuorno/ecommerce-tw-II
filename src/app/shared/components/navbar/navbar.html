@@ -105,17 +105,6 @@
       }
     </div>
 
-    <a href="#" class="block py-2">Acerca de</a>
-    <a href="#" class="block py-2">Contacto</a>
-
-    <a routerLink="/carrito" (click)="cerrarTodo()" class="flex items-center gap-2 py-2">
-      Carrito
-      <span
-        class="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-indigo-500 px-1 text-xs text-white">
-        {{ cantidad() }}
-      </span>
-    </a>
-
     @if (usuarioLogueado()) {
     <div class="flex w-full items-center justify-between mt-3">
       <span class="text-sm font-medium">
