@@ -65,3 +65,24 @@ export async function buscarUsuarioPorId(id: number): Promise<UsuarioDB | null> 
 
   return resultado.rows[0] ?? null;
 }
+
+export async function actualizarUsuario(
+  id: number,
+  datos: {
+    email: string;
+    nombre: string;
+    apellido: string;
+    direccion: string;
+  }
+): Promise<Omit<UsuarioDB, "contraseniaHash"> | null> {
+  
+  const resultado = await pool.query<Omit<UsuarioDB, "contraseniaHash">>(`
+    UPDATE usuarios
+    SET email = $1, nombre = $2, apellido = $3, direccion = $4
+    WHERE id = $5
+    RETURNING id, email, nombre, apellido, direccion; 
+  `, 
+  [datos.email, datos.nombre, datos.apellido, datos.direccion, id]);
+
+  return resultado.rows[0] ?? null;
+}

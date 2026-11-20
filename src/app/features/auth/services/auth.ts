@@ -1,3 +1,4 @@
+
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
@@ -5,7 +6,11 @@ import { catchError, Observable, of, tap } from 'rxjs';
 import { Usuario, UsuarioAutenticado } from '../../../shared/models/usuario';
 import { RespuestaAutenticacion } from './interface/auth';
 
-type UsuarioLogueado = Omit<Usuario, 'contrasenia'>;
+// Datos que se pueden modificar desde el perfil
+export type DatosPerfil = Omit<UsuarioAutenticado, 'id'>;
+
+// Usuario sin contraseña
+type UsuarioLogueado = UsuarioAutenticado;
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +18,7 @@ type UsuarioLogueado = Omit<Usuario, 'contrasenia'>;
 export class AuthService {
 
   private http = inject(HttpClient);
+
   private apiUrl = 'http://localhost:3000/api/usuarios';
 
   // Usuario actualmente autenticado
@@ -33,6 +39,7 @@ export class AuthService {
       return null;
     }
   }
+
   // Guardar usuario en localStorage
   private guardarSesion(usuario: UsuarioLogueado): void {
     localStorage.setItem(
@@ -95,7 +102,30 @@ export class AuthService {
       tap(() => {
         this.sesionCargada.set(true);
       })
+    );
+  }
 
+  // Actualizar perfil
+  actualizarPerfil(datos: DatosPerfil): Observable<{
+    mensaje: string;
+    usuario: UsuarioAutenticado;
+  }> {
+
+    return this.http.put<{
+      mensaje: string; 
+      usuario: UsuarioAutenticado; 
+    }>(
+      `${this.apiUrl}/me`,
+      datos,
+      { withCredentials: true }
+
+    ).pipe(
+
+      tap(respuesta => {
+        this.usuarioLogueado.set(respuesta.usuario);
+        this.guardarSesion(respuesta.usuario);
+      })
+      
     );
   }
 
@@ -110,8 +140,7 @@ export class AuthService {
     return this.http.post<{ mensaje: string }>(
       `${this.apiUrl}/logout`,
       {},
-      {withCredentials: true }
-
+      { withCredentials: true }
     ).pipe(
 
       tap(() => {

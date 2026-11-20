@@ -6,7 +6,10 @@ const router = Router();
 
 router.post("/signup", usuarioController.registrarUsuario);
 router.post("/signin", usuarioController.iniciarSesion);
+
 router.get("/me", requireAuth, usuarioController.obtenerUsuarioActual);
+router.put("/me", requireAuth, usuarioController.actualizarUsuarioActual);
+
 router.post("/logout", usuarioController.cerrarSesion);
 
 export default router;

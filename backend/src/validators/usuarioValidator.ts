@@ -41,3 +41,42 @@ export function validarLogin(datos: unknown): DatosLogin | null {
         contrasenia: usuario.contrasenia
     };
 }
+
+import { DatosUsuario } from "../models/dto/UsuarioDTO.js";
+
+export function validarActualizacionPerfil(datos: unknown): DatosUsuario | null {
+
+    if (typeof datos !== "object" || datos === null) {
+        return null;
+    }
+
+    const usuario = datos as Record<string, unknown>;
+
+    if ( typeof usuario.email !== "string" || 
+        typeof usuario.nombre !== "string" ||
+        typeof usuario.apellido !== "string" ||
+        typeof usuario.direccion !== "string") 
+    {
+        return null;
+    }
+
+    const email = usuario.email.trim().toLowerCase();
+    const nombre = usuario.nombre.trim();
+    const apellido = usuario.apellido.trim();
+    const direccion = usuario.direccion.trim();
+
+    if (!email || !nombre || !apellido || !direccion) {
+        return null;
+    }
+    if (nombre.length > 100 || apellido.length > 100) {
+        return null;
+    }
+    if (email.length > 255 || direccion.length > 255) {
+        return null;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return null;
+    }
+    
+    return { email, nombre, apellido, direccion };
+}

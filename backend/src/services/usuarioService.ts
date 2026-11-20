@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import type { UsuarioDB } from "../models/usuarioModel.js";
 import { DatosRegistro } from "../models/dto/UsuarioDTO.js";
-import { buscarUsuarioPorEmail, buscarUsuarioPorId, crearUsuario } from "../repositories/usuarioRepositorio.js";
+import { buscarUsuarioPorEmail, buscarUsuarioPorId, crearUsuario, actualizarUsuario } from "../repositories/usuarioRepositorio.js";
 
 export type UsuarioPublico = Omit<UsuarioDB, "contraseniaHash">;
 
@@ -73,4 +73,17 @@ export class UsuarioService {
 
     return usuarioPublico;
   }
+
+  async actualizarPerfil(
+    id: number,
+    datos: {
+      email: string;
+      nombre: string;
+      apellido: string;
+      direccion: string;
+    }
+  ) {
+    return await actualizarUsuario(id, datos);
+  }
+  
 }

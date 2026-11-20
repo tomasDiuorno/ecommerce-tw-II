@@ -4,6 +4,7 @@ import { validarLogin, validarRegistro } from "../validators/usuarioValidator.js
 import { error } from "node:console";
 import { join } from "node:path";
 import { isModuleNamespaceObject } from "node:util/types";
+import { validarActualizacionPerfil } from "../validators/usuarioValidator.js";
 
 const usuarioService = new UsuarioService();
 
@@ -134,4 +135,47 @@ export async function cerrarSesion(req:Request, res:Response) {
       mensaje: "Sesion cerrada correctamente"
     });
   });
+}
+
+export async function actualizarUsuarioActual(req: Request, res: Response) {
+
+  const usuarioId = req.session.usuarioId;
+
+  if (!usuarioId) {
+    return res.status(401).json({ mensaje: "Debes iniciar sesión"});
+  }
+
+  const datos = validarActualizacionPerfil(req.body);
+
+  if (!datos) {
+    return res.status(400).json({ mensaje: "Los datos del perfil no son válidos"});
+  }
+
+  try {
+    const usuario = await usuarioService.actualizarPerfil(usuarioId, datos);
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "No se encontró el usuario"});
+    }
+
+    return res.status(200).json({
+      mensaje: "Perfil actualizado correctamente",
+      usuario
+    });
+    
+  } catch (error) {
+
+    if (typeof error === "object" && 
+      error !== null &&
+      "code" in error && 
+      error.code === "23505"
+    ) {
+      return res.status(409).json({mensaje: "Ese email ya está registrado por otra cuenta"});
+    }
+
+    console.error("Error al actualizar el perfil:", error);
+
+    return res.status(500).json({ mensaje: "Error interno al actualizar el perfil"});
+  }
+
 }
