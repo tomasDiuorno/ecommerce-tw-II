@@ -4,7 +4,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
 import { DineroPipe } from '../../../../shared/pipes/dinero-pipe';
 import { DireccionSugerida } from '../../services/direcciones';
-
+import { Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { AuthService } from '../../../auth/services/auth';
 
 @Component({
   imports: [DineroPipe, ReactiveFormsModule],
@@ -13,6 +15,9 @@ import { DireccionSugerida } from '../../services/direcciones';
   templateUrl: './carrito-resumen.html',
 })
 export class CarritoResumen {
+  authService = inject(AuthService);
+  private router = inject(Router);
+
   totalProductos =  input.required<number>();
   envio = input.required<number>();
   totalCompra = input.required<number>();
@@ -44,6 +49,19 @@ export class CarritoResumen {
       .subscribe(termino => {
         this.direccionABuscar.emit(termino ?? '');
       });
+  }
+
+  confirmarPedido(): void {
+    if (this.carritoVacio()) {
+      return;
+    }
+
+    if (!this.authService.estaLogueado()) {
+      this.router.navigate(
+        ['/signin'], 
+        {queryParams: {returnUrl: '/carrito'}}
+      );
+    return;
   }
 
   aplicarCodigoPostal() {

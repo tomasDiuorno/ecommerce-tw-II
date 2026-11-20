@@ -79,10 +79,11 @@ export class CarritoService {
 
     effect(() => {
       try {
-        localStorage.setItem(CLAVE_CARRITO, JSON.stringify(this.items()));
-      } catch {
-        
-      }
+        localStorage.setItem(
+          CLAVE_CARRITO,
+          JSON.stringify(this.items())
+        );
+      } catch {}
     });
   }
 

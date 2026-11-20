@@ -4,6 +4,7 @@ import { ListaDeProductos } from './features/catalogo/pages/lista-de-productos/l
 import { Carrito } from './features/carrito/pages/carrito-vista/carrito';
 import { Home } from './features/home/pages/home/home';
 import { DetalleProducto } from './features/catalogo/pages/detalle-producto/detalle-producto';
+import { Signin } from './features/auth/pages/signin/signin';
 
 export const routes: Routes = [
     { path: '', component: Home },
@@ -13,4 +14,5 @@ export const routes: Routes = [
     { path: 'productos', redirectTo: 'catalogo', pathMatch: 'full' },
     { path: 'carrito', component: Carrito },
     { path: 'signup', component: Signup },
+    { path: 'signin', component: Signin },
 ];
