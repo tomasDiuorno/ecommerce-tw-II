@@ -1,10 +1,15 @@
-import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
+import { AuthService } from '../../auth/services/auth';
 import { EnvioService, type CotizacionEnvio } from './envio';
 import { Producto } from '../../../shared/models/producto';
 import { itemCarrito } from '../models/item-carrito';
 
+const PREFIJO_CARRITO = 'carrito';
+const CLAVE_INVITADO = `${PREFIJO_CARRITO}_invitado`;
 
-const CLAVE_CARRITO = 'carrito';
+function claveCarrito(usuarioId: number | string | null | undefined): string {
+  return usuarioId ? `${PREFIJO_CARRITO}_${usuarioId}` : CLAVE_INVITADO;
+}
 
 function esObjeto(valor: unknown): valor is Record<string, unknown> {
   return typeof valor === 'object' && valor !== null && !Array.isArray(valor);
@@ -52,19 +57,13 @@ function esItemCarrito(valor: unknown): valor is itemCarrito {
   );
 }
 
-function cargarItemsGuardados(): itemCarrito[] {
+function cargarItemsGuardados(clave: string): itemCarrito[] {
   try {
-    const guardado = localStorage.getItem(CLAVE_CARRITO);
-
-    if (guardado === null) {
-      return [];
-    }
+    const guardado = localStorage.getItem(clave);
+    if (guardado === null) return [];
 
     const datos: unknown = JSON.parse(guardado);
-
-    if (!Array.isArray(datos)) {
-      return [];
-    }
+    if (!Array.isArray(datos)) return [];
 
     return datos.filter(esItemCarrito);
   } catch {
@@ -72,9 +71,34 @@ function cargarItemsGuardados(): itemCarrito[] {
   }
 }
 
+function guardarItems(clave: string, items: itemCarrito[]): void {
+  try {
+    localStorage.setItem(clave, JSON.stringify(items));
+  } catch {
+  }
+}
+
+function fusionarItems(base: itemCarrito[], nuevos: itemCarrito[]): itemCarrito[] {
+  const resultado = base.map(item => ({ ...item }));
+
+  for (const nuevo of nuevos) {
+    const existente = resultado.find(item => item.producto.id === nuevo.producto.id);
+    if (existente) {
+      existente.cantidad += nuevo.cantidad;
+    } else {
+      resultado.push({ ...nuevo });
+    }
+  }
+
+  return resultado;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CarritoService {
-  private items = signal<itemCarrito[]>(cargarItemsGuardados());
+  private readonly auth = inject(AuthService);
+  private clave = claveCarrito(this.auth.usuarioLogueado()?.id);
+
+  private items = signal<itemCarrito[]>(cargarItemsGuardados(this.clave));
 
   totalProductos = computed(() =>
     this.items().reduce(
@@ -82,8 +106,7 @@ export class CarritoService {
       0
     )
   );
-  
-  /*Se agrega calculo de envio desde el backend*/
+
   private readonly envioService = inject(EnvioService);
 
   readonly codigoPostal = signal('');
@@ -93,9 +116,8 @@ export class CarritoService {
 
   readonly envio = computed(() => this.cotizacion()?.envio ?? 0);
 
-  readonly totalCompra = computed(() => this.cotizacion()?.total ?? this.totalProductos(),);
+  readonly totalCompra = computed(() => this.cotizacion()?.total ?? this.totalProductos());
   productos = this.items.asReadonly();
-  /*FIN calculo de envio desde el backend*/
 
   cantidad = computed(() =>
     this.items().reduce((suma, item) => suma + item.cantidad, 0));
@@ -126,7 +148,7 @@ export class CarritoService {
           this.calculandoEnvio.set(false);
         },
         error: () => {
-          this.errorEnvio.set('No se pudo calcular el envío. Revisá el código postal y la conexión con el servidor.',);
+          this.errorEnvio.set('No se pudo calcular el envío. Revisá el código postal y la conexión con el servidor.');
           this.calculandoEnvio.set(false);
         },
       });
@@ -135,57 +157,74 @@ export class CarritoService {
     });
 
     effect(() => {
-      try {
-        localStorage.setItem(CLAVE_CARRITO, JSON.stringify(this.items()));
-      } catch {
-        
-      }
+      const nuevaClave = claveCarrito(this.auth.usuarioLogueado()?.id);
+
+      untracked(() => {
+        if (nuevaClave === this.clave) return;
+
+        const claveAnterior = this.clave;
+        const eraInvitado = claveAnterior === CLAVE_INVITADO;
+        const esInvitado = nuevaClave === CLAVE_INVITADO;
+        this.clave = nuevaClave;
+
+        if (eraInvitado && !esInvitado) {
+          const fusionado = fusionarItems(cargarItemsGuardados(nuevaClave), this.items());
+          this.items.set(fusionado);
+          guardarItems(nuevaClave, fusionado);
+          localStorage.removeItem(claveAnterior);
+        } else if (esInvitado) {
+          this.items.set([]);
+          localStorage.removeItem(CLAVE_INVITADO);
+        } else {
+          this.items.set(cargarItemsGuardados(nuevaClave));
+        }
+
+        this.direccion.set(null);
+        this.codigoPostal.set('');
+      });
     });
   }
 
+  private actualizarItems(fn: (items: itemCarrito[]) => itemCarrito[]) {
+    this.items.update(fn);
+    guardarItems(this.clave, this.items());
+  }
+
   agregarProducto(producto: Producto, cantidad = 1) {
-    const itemExistente = this.items().find(item => item.producto.id == producto.id)
-    if (itemExistente) {
-      this.items.update(items =>
-        items.map(item =>
-          item.producto.id === itemExistente.producto.id
-            ? { ...item, cantidad: item.cantidad + cantidad }
-            : item
-        )
-      );
-    } else {
-      this.items.update((items) => [...items, { producto, cantidad }]);
-    }
-    console.log(this.items());
+    this.actualizarItems(items => {
+      const existente = items.find(item => item.producto.id === producto.id);
+      return existente
+        ? items.map(item =>
+            item.producto.id === producto.id
+              ? { ...item, cantidad: item.cantidad + cantidad }
+              : item
+          )
+        : [...items, { producto, cantidad }];
+    });
   }
 
   eliminarProducto(itemAEliminar: itemCarrito): void {
-    this.items.update(items => {
+    this.actualizarItems(items => {
       const encontrado = items.find(item => item.producto.id === itemAEliminar.producto.id);
-      if (!encontrado) {
-        return items;
-      }
+      if (!encontrado) return items;
 
       if (encontrado.cantidad > 1) {
         return items.map(item =>
-          item.producto.id === itemAEliminar.producto.id ?
-            { ...item, cantidad: item.cantidad - 1 } : item
-        )
+          item.producto.id === itemAEliminar.producto.id
+            ? { ...item, cantidad: item.cantidad - 1 }
+            : item
+        );
       }
 
-      return items.filter(
-        item => item.producto.id !== itemAEliminar.producto.id
-      )
-    }
-    )
+      return items.filter(item => item.producto.id !== itemAEliminar.producto.id);
+    });
   }
 
   establecerDireccion(direccion: string) {
     this.direccion.set(direccion);
   }
 
-
   vaciarCarrito() {
-    this.items.set([]);
+    this.actualizarItems(() => []);
   }
 }
