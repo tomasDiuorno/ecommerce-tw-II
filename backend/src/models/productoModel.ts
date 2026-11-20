@@ -3,6 +3,7 @@ export interface Producto {
     nombre: string;
     descripcion: string;
     categoria: string;
+    categoriaId: number;
     precio: number;
     imagen: string | null;
     stock: number;

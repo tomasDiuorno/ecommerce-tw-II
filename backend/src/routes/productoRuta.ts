@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { obtenerProductosDisponibles, obtenerProductosDestacados, obtenerProductoPorId, obtenerProductos, agregarStock, quitarStock, crearProducto} from '../controllers/productoControlador.js';
-import { editarProducto } from '../repositories/productoRepositorio.js';
+import { editarProducto } from '../controllers/productoControlador.js';
 
 const router = Router();
 

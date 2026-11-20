@@ -2,6 +2,7 @@ import { Service, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Producto, CrearProducto } from '../../../shared/models/producto';
 import { HttpClient } from '@angular/common/http';
+import type { EditarProductoDTO } from '../models/EditarProductoDTO';
 
 @Service()
 export class ProductosAdminService {
@@ -11,6 +12,10 @@ export class ProductosAdminService {
 
   obtenerPorId(id: number): Observable<Producto> {
     return this.http.get<Producto>(`${this.apiUrl}/${id}`);
+  }
+
+  editarProducto(datos: EditarProductoDTO): Observable<Producto> {
+    return this.http.put<Producto>(`${this.apiUrl}/editarProducto`, datos);
   }
 
   agregarStock(id: number, stock: number): Observable<void> {

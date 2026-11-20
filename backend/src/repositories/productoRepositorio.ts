@@ -10,6 +10,7 @@ const SELECT_PRODUCTOS = `
     p.nombre,
     p.descripcion,
     c.nombre AS categoria,
+    p.categoria_id AS "categoriaId",
     p.precio::float8 AS precio,
     p.imagen,
     p.stock,
