@@ -12,10 +12,10 @@ import { AuthService } from '../../../features/auth/services/auth';
   templateUrl: './navbar.html',
 })
 export class Navbar {
-private readonly router = inject(Router);
+private router = inject(Router);
 private readonly carritoService = inject(CarritoService);
 private readonly catalogoService = inject(CatalogoService);
-private readonly authService = inject(AuthService);
+private authService = inject(AuthService);
 private readonly modeloBusqueda = signal({ texto: '' });
 protected readonly formBusqueda = form(this.modeloBusqueda);
 protected readonly cantidad = this.carritoService.cantidad;
