@@ -6,10 +6,67 @@ import { itemCarrito } from '../models/item-carrito';
 
 const CLAVE_CARRITO = 'carrito';
 
+function esObjeto(valor: unknown): valor is Record<string, unknown> {
+  return typeof valor === 'object' && valor !== null && !Array.isArray(valor);
+}
+
+function esEnteroPositivo(valor: unknown): valor is number {
+  return (
+    typeof valor === 'number' &&
+    Number.isSafeInteger(valor) &&
+    valor > 0
+  );
+}
+
+function esProducto(valor: unknown): valor is Producto {
+  if (!esObjeto(valor)) {
+    return false;
+  }
+
+  const precio = valor['precio'];
+  const stock = valor['stock'];
+
+  return (
+    esEnteroPositivo(valor['id']) &&
+    typeof valor['nombre'] === 'string' &&
+    typeof valor['descripcion'] === 'string' &&
+    typeof valor['categoria'] === 'string' &&
+    esEnteroPositivo(valor['categoriaId']) &&
+    typeof precio === 'number' &&
+    Number.isFinite(precio) &&
+    precio >= 0 &&
+    (valor['imagen'] === null || typeof valor['imagen'] === 'string') &&
+    typeof stock === 'number' &&
+    Number.isSafeInteger(stock) &&
+    stock >= 0 &&
+    typeof valor['disponible'] === 'boolean' &&
+    typeof valor['destacado'] === 'boolean'
+  );
+}
+
+function esItemCarrito(valor: unknown): valor is itemCarrito {
+  return (
+    esObjeto(valor) &&
+    esProducto(valor['producto']) &&
+    esEnteroPositivo(valor['cantidad'])
+  );
+}
+
 function cargarItemsGuardados(): itemCarrito[] {
   try {
     const guardado = localStorage.getItem(CLAVE_CARRITO);
-    return guardado ? JSON.parse(guardado) : [];
+
+    if (guardado === null) {
+      return [];
+    }
+
+    const datos: unknown = JSON.parse(guardado);
+
+    if (!Array.isArray(datos)) {
+      return [];
+    }
+
+    return datos.filter(esItemCarrito);
   } catch {
     return [];
   }

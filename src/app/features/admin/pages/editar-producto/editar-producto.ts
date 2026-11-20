@@ -69,9 +69,9 @@ export class EditarProducto implements OnInit {
   }
 
   cargarDatos(): void {
-    if (this.cargandoProducto() || this.cargandoCategorias() || this.guardando()) {
-      return;
-    }
+  if (this.cargandoProducto() || this.guardando()) {
+  return;
+}
 
     this.errorProducto.set(null);
     this.errorGuardado.set(null);

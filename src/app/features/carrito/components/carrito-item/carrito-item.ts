@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, Input, Output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { itemCarrito } from '../../models/item-carrito';
 import { DineroPipe } from '../../../../shared/pipes/dinero-pipe';
 
@@ -9,12 +9,15 @@ import { DineroPipe } from '../../../../shared/pipes/dinero-pipe';
   templateUrl: './carrito-item.html',
 })
 export class CarritoItem {
-  @Input() item!: itemCarrito;
-  @Output() eliminarProducto = new EventEmitter<itemCarrito>();
+  readonly item = input.required<itemCarrito>();
+  readonly eliminarProducto = output<itemCarrito>();
 
+  readonly subtotal = computed(() => {
+    const item = this.item();
+    return item.producto.precio * item.cantidad;
+  });
 
-  onEliminarProducto() {
-    this.eliminarProducto.emit(this.item)
+  onEliminarProducto(): void {
+    this.eliminarProducto.emit(this.item());
   }
-  subtotal = computed(() => this.item.producto.precio * this.item.cantidad)
 }
