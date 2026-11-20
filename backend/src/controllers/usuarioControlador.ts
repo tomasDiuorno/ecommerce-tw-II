@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { UsuarioService } from "../services/usuarioService.js";
 import { validarLogin, validarRegistro } from "../validators/usuarioValidator.js";
+import { error } from "node:console";
+import { join } from "node:path";
+import { isModuleNamespaceObject } from "node:util/types";
 
 const usuarioService = new UsuarioService();
 
@@ -36,6 +39,29 @@ export async function registrarUsuario(req: Request, res: Response) {
   }
 }
 
+export async function obtenerUsuarioActual(req:Request, res:Response) {
+  const usuarioId = req.session.usuarioId;
+  if(!usuarioId){
+    return res.status(401).json({
+      mensaje: "No hay una sesion activa"
+    });
+  }
+  try{
+    const usuario = await usuarioService.buscarPorId(usuarioId)
+    if(!usuario){
+      return res.status(401).json({
+        mensaje: "El usuario de la sesion ya no existe"
+      });
+    }
+    return res.status(200).json(usuario);
+  }catch(error){
+    console.error("Error al obtener el usuario actual: ", error);
+    return res.status(500).json({
+      mensaje: "Error interno al obtener el usuario"
+    });
+  }
+}
+
 export async function iniciarSesion(req: Request, res: Response) {
   const datosLogin = validarLogin(req.body);
 
@@ -54,7 +80,30 @@ export async function iniciarSesion(req: Request, res: Response) {
       });
     }
 
-    return res.json(usuario);
+    req.session.regenerate((error) => {
+      if(error){
+        console.error("Error al generar la sesion", error);
+        return res.status(500).json({
+          mensaje: "No se pudo iniciar la sesion"
+        });
+      }
+
+      req.session.usuarioId = usuario.id;
+
+      req.session.save((error) =>{
+        if(error){
+          console.error("Error al guardar la sesion: ", error);
+          return res.status(500).json({
+            mensaje: "No se pudo guardar la sesion"
+          });
+        }
+
+        return res.status(200).json({
+          mensaje: "Inicio de sesion exitoso",
+          usuario
+        });
+      });
+    });
 
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
@@ -63,4 +112,26 @@ export async function iniciarSesion(req: Request, res: Response) {
       mensaje: "Error interno al iniciar sesión"
     });
   }
+}
+
+export async function cerrarSesion(req:Request, res:Response) {
+  req.session.destroy((error) => {
+    if(error){
+      console.error("Error al cerrar la sesion: ", error);
+      return res.status(500).json({
+        mensaje: "No se pudo cerrar sesion"
+      });
+    }
+
+    res.clearCookie("connect.sid", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/"
+    });
+
+    return res.status(200).json({
+      mensaje: "Sesion cerrada correctamente"
+    });
+  });
 }

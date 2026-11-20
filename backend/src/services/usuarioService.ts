@@ -1,13 +1,18 @@
 import bcrypt from "bcryptjs";
 import type { UsuarioDB } from "../models/usuarioModel.js";
 import { DatosRegistro } from "../models/dto/UsuarioDTO.js";
-import { buscarUsuarioPorEmail, crearUsuario } from "../repositories/usuarioRepositorio.js";
+import { buscarUsuarioPorEmail, buscarUsuarioPorId, crearUsuario } from "../repositories/usuarioRepositorio.js";
 
 export type UsuarioPublico = Omit<UsuarioDB, "contraseniaHash">;
 
 export class UsuarioService {
   async registrar(datos: DatosRegistro): Promise<UsuarioPublico> {
+    if (!this.contraseniaEsValida(datos.contrasenia)) {
+      throw new Error("CONTRASENIA_INVALIDA");
+    }
+    
     const contraseniaHash = await bcrypt.hash(datos.contrasenia, 10);
+    
     const nuevoUsuario = await crearUsuario({
       email: datos.email,
       contraseniaHash,
@@ -16,12 +21,17 @@ export class UsuarioService {
       direccion: datos.direccion
     });
 
-    if (!this.contraseniaEsValida(datos.contrasenia)) {
-      throw new Error("CONTRASENIA_INVALIDA");
-    }
-
     const { contraseniaHash: _, ...usuarioPublico } = nuevoUsuario;
 
+    return usuarioPublico;
+  }
+
+  async buscarPorId(id: number): Promise<UsuarioPublico | null>{
+    const usuario = await buscarUsuarioPorId(id);
+    if(!usuario){
+      return null;
+    }
+    const {contraseniaHash: _, ...usuarioPublico} = usuario;
     return usuarioPublico;
   }
 
