@@ -4,6 +4,8 @@ import { ListaDeProductos } from './features/catalogo/pages/lista-de-productos/l
 import { Carrito } from './features/carrito/pages/carrito-vista/carrito';
 import { Home } from './features/home/pages/home/home';
 import { DetalleProducto } from './features/catalogo/pages/detalle-producto/detalle-producto';
+import { guestGuard } from './core/guards/guest.guard';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -12,16 +14,18 @@ export const routes: Routes = [
   { path: 'productos/:id', component: DetalleProducto },
   { path: 'productos', redirectTo: 'catalogo', pathMatch: 'full' },
   { path: 'carrito', component: Carrito },
-  { path: 'signup', component: Signup },
+  { path: 'signup', component: Signup, canActivate: [guestGuard] },
   {
     path: 'admin',
     loadChildren: () =>
       import('./features/admin/admin.routes')
         .then(m => m.adminRoutes),
+        canActivate: [authGuard]
   },
   {
     path: 'signin', loadComponent: () =>
       import('./features/auth/pages/signin/signin')
-        .then(m => m.Signin)
+        .then(m => m.Signin),
+        canActivate: [guestGuard]
   }
 ];
