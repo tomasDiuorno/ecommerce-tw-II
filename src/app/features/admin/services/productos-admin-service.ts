@@ -28,4 +28,9 @@ export class ProductosAdminService {
   crearProducto(datos: CrearProducto): Observable<Producto> {
     return this.http.post<Producto>(this.apiUrl, datos);
   }
+
+  eliminarProducto(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
 }

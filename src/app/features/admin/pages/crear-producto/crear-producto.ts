@@ -2,13 +2,13 @@ import { Component, inject, signal  } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import type { OnInit } from '@angular/core';
 import { CatalogoService } from '../../../catalogo/services/catalogo';
-import { Router } from '@angular/router';
+import { Router, RouterLink  } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ProductosAdminService } from '../../services/productos-admin-service';
 
 @Component({
   selector: 'app-crear-producto',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './crear-producto.html',
   styleUrl: './crear-producto.css',
 })
