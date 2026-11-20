@@ -72,7 +72,6 @@ export class Carrito {
     this.carritoService.eliminarProducto(item);
   }
 
-  // Navegar a la pantalla de facturación
   realizarPedido(): void {
     this.router.navigate(['/checkout']);
   }

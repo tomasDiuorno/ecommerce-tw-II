@@ -34,12 +34,9 @@ export class CarritoResumen {
   protected readonly formularioBusqueda = form(this.modeloBusqueda);
   protected readonly formularioCodigoPostal = form(this.modeloCodigoPostal);
 
-  // Comunica el texto de búsqueda al componente padre
   readonly direccionABuscar = outputFromObservable(
     toObservable(this.formularioBusqueda.texto().value),
   );
-
-  // Avisa al componente padre cuando se presiona "Realizar pedido"
   readonly confirmarPedido = output<void>();
 
   aplicarCodigoPostal(): void {
