@@ -1,6 +1,6 @@
 
 import { HttpError } from "../middlewares/HttpError.js";
-import { crearProductoRepositorio } from '../repositories/productoRepositorio.js';
+import { crearProductoRepositorio, eliminarProductoRepositorio } from '../repositories/productoRepositorio.js';
 import { existeCategoriaRepositorio } from '../repositories/categoriaRepositorio.js';
 import { validarCrearProducto } from '../validators/productoValidator.js';
 import { validarEditarProducto } from '../validators/editarProductoValidator.js'
@@ -112,4 +112,16 @@ export async function editarProductoServicio(producto: unknown): Promise<Product
   }
 
     return obtenerProductoPorIdServicio(id);
+}
+
+export async function eliminarProductoServicio(id: number,): Promise<void> {
+  if (!Number.isInteger(id) || id <= 0 || id > 2147483647) {
+    throw new HttpError(400, 'El ID debe ser un entero entre 1 y 2147483647',);
+  }
+
+  const eliminado = await eliminarProductoRepositorio(id);
+
+  if (!eliminado) {
+    throw new HttpError(404, 'El producto no existe');
+  }
 }
