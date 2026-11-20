@@ -27,7 +27,7 @@ export async function requireAdmin(
       return;
     }
 
-    if (usuario.rol !== 'Admin') {
+    if (usuario.rol !== 'admin') {
       res.status(403).json({
         mensaje: 'No tenés permisos para realizar esta operación.',
       });
