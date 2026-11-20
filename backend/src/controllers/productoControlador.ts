@@ -6,7 +6,9 @@ import {
   obtenerTodosLosProductosServicio,
   agregarStockServicio,
   quitarStockProductoServicio,
-  crearProductoServicio
+  crearProductoServicio,
+  editarProductoServicio,
+  eliminarProductoServicio
 } from '../services/productoService.js';
 import { HttpError } from '../middlewares/HttpError.js';
 
@@ -97,6 +99,30 @@ export async function crearProducto(req: Request, res: Response, next: NextFunct
     const productoCreado = await crearProductoServicio(datos);
 
     res.status(201).json(productoCreado);
+  } catch (error) {
+    next(error);
+  }
+}
+export async function editarProducto(req: Request, res: Response, next: NextFunction,): Promise<void> {
+  try {
+    const datos: unknown = req.body;
+
+    const productoEditado = await editarProductoServicio(datos);
+
+    res.status(200).json(productoEditado);
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+export async function eliminarProducto(req: Request, res: Response, next: NextFunction,): Promise<void> {
+  try {
+    const id = verificarNumeroYPositivo(req.params.id);
+
+    await eliminarProductoServicio(id);
+
+    res.status(204).send();
   } catch (error) {
     next(error);
   }

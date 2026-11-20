@@ -14,7 +14,8 @@ export async function buscarUsuarioPorEmail(
       contrasenia_hash AS "contraseniaHash",
       nombre,
       apellido,
-      direccion
+      direccion,
+      rol
     FROM usuarios
     WHERE email = $1
     LIMIT 1;
@@ -25,7 +26,7 @@ export async function buscarUsuarioPorEmail(
 
 // Registrar un usuario
 export async function crearUsuario(
-  usuario: Omit<UsuarioDB, 'id'>
+  usuario: Omit<UsuarioDB, 'id' | 'rol'>
 ): Promise<UsuarioDB> {
 
   const resultado = await pool.query<UsuarioDB>(`
@@ -55,9 +56,18 @@ export async function crearUsuario(
   return resultado.rows[0];
 }
 
-export async function buscarUsuarioPorId(id: number): Promise<UsuarioDB | null> {
+export async function buscarUsuarioPorId(
+  id: number,
+): Promise<UsuarioDB | null> {
   const resultado = await pool.query<UsuarioDB>(`
-    SELECT id, email, contrasenia_hash AS "contraseniaHash", nombre, apellido, direccion
+    SELECT
+      id,
+      email,
+      contrasenia_hash AS "contraseniaHash",
+      nombre,
+      apellido,
+      direccion,
+      rol
     FROM usuarios
     WHERE id = $1
     LIMIT 1;

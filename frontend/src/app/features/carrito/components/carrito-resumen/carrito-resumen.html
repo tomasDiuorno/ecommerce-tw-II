@@ -1,0 +1,155 @@
+<div class="max-w-[360px] w-full bg-gray-100/40 p-5 mt-16 md:mt-0 border border-gray-300/70">
+        <h2 class="text-xl font-medium">Resumen de compra</h2>
+
+        <hr class="border-gray-300 my-5" />
+
+        <div class="mb-6">
+            <p class="text-sm font-medium uppercase">
+                Dirección de entrega
+            </p>
+
+            
+        <div class="relative flex justify-between items-start mt-2">
+            <p class="text-gray-500">
+                @if (direccionSeleccionada()) {
+                    {{ direccionSeleccionada() }}
+                } @else {
+                    No se encontró dirección
+                }
+            </p>
+
+            <button
+                type="button"
+                (click)="toggleDireccion()"
+                class="text-indigo-500 hover:underline cursor-pointer">
+                Cambiar
+            </button>
+
+            <!-- Menú desplegable -->
+             @if (mostrarDireccion()) {
+                <div class="absolute top-full mt-2 left-0 w-full bg-white border border-gray-300 shadow-lg z-20">
+                    
+                    <!-- Buscador con Signal Forms -->
+                    <div class="p-2 border-b border-gray-200">
+                        <input 
+                            type="text" 
+                            [formField]="formularioBusqueda.texto"
+                            placeholder="Buscar calle, barrio..." 
+                            class="w-full px-3 py-2 border border-gray-300 focus:outline-indigo-500 text-sm"
+                            autofocus
+                        >
+                    </div>
+
+                    <!-- Lista de Resultados -->
+                    <ul class="max-h-48 overflow-y-auto">
+                        @for (resultado of resultadoBusqueda(); track resultado.id) {
+                            <li 
+                                (click)="seleccionarDireccion(resultado)"
+                                class="p-3 text-sm text-gray-600 hover:bg-indigo-50 cursor-pointer border-b border-gray-100 last:border-0"
+                            >
+                                {{ resultado.direccion }}
+                            </li>
+                        } @empty {
+                            <!-- Mensaje si está buscando o no hay resultados -->
+                            @if (formularioBusqueda.texto().value().length > 2) {
+                                <li class="p-3 text-sm text-center text-gray-400">
+                                    Buscando direcciones...
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+
+        @if (codigoPostal()) {
+  <p class="text-sm text-gray-500 mt-2">
+    Código postal: <span class="font-medium text-gray-800">{{ codigoPostal() }}</span>
+  </p>
+} @else if (direccionSeleccionada()) {
+  <label for="codigo-postal" class="block text-sm font-medium mt-6">
+    Código postal de entrega
+  </label>
+
+  <input id="codigo-postal"
+    type="text"
+    autocomplete="postal-code"
+    [formField]="formularioCodigoPostal.texto"
+    aria-describedby="ayuda-codigo-postal"
+    class="w-full border border-gray-400 rounded px-3 py-2 mt-2">
+
+  <p id="ayuda-codigo-postal" class="text-sm text-gray-700 mt-1">
+    No lo pudimos detectar. Ingresá 4 números o el CPA completo, por ejemplo B1754JEC.
+  </p>
+
+  <button type="button" (click)="aplicarCodigoPostal()"
+    class="mt-2 rounded bg-indigo-700 px-4 py-2 text-white cursor-pointer transition hover:bg-indigo-800 active:bg-indigo-900 active:scale-95">
+    Calcular envío
+  </button>
+}
+
+            <label for="payment-method" class="block text-sm font-medium uppercase mt-6">
+                Método de pago
+            </label>
+
+            <select
+                id="payment-method"
+                class="w-full border border-gray-300 bg-white px-3 py-2 mt-2 focus:outline-indigo-500"
+            >
+                <option value="COD">Cash On Delivery</option>
+                <option value="Online">Online Payment</option>
+            </select>
+        </div>
+
+        <hr class="border-gray-300" />
+
+        <div class="text-gray-800 mt-4 space-y-2" aria-live="polite">
+            <p class="flex justify-between">
+                <span>Precio</span>
+                <span>{{ totalProductos() | dinero }}</span>
+            </p>
+
+            <p class="flex justify-between">
+                <span>Costo de envío</span>
+                <span>
+                @if (carritoVacio()) {
+                    {{ 0 | dinero }}
+                } @else if (calculandoEnvio()) {
+                    Calculando...
+                } @else if (errorEnvio()) {
+                    No disponible
+                } @else if (tieneCotizacion()) {
+                    {{ envio() | dinero }}
+                } @else {
+                    Pendiente
+                }
+                </span>
+            </p>
+
+            @if (errorEnvio()) {
+                <p class="text-sm text-red-800">{{ errorEnvio() }}</p>
+            } @else if (!carritoVacio() && !tieneCotizacion() && !calculandoEnvio()) {
+                <p class="text-sm">Seleccioná una dirección para cotizar el envío.</p>
+            }
+
+            <p class="flex justify-between text-lg font-medium mt-3">
+                <span>Total:</span>
+                <span>
+                @if (carritoVacio() || tieneCotizacion()) {
+                    {{ totalCompra() | dinero }}
+                } @else {
+                    Pendiente
+                }
+                </span>
+            </p>
+            </div>
+
+      <button
+    type="button"
+    (click)="confirmarPedido.emit()"
+    [disabled]="carritoVacio() || calculandoEnvio() || !tieneCotizacion()"
+    class="w-full py-3 mt-6 bg-indigo-500 text-white font-medium hover:bg-indigo-600 transition-colors cursor-pointer"
+>
+    Realizar pedido
+</button>
+    </div>

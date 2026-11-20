@@ -1,0 +1,218 @@
+<a
+  routerLink="/admin/productos"
+  class="mb-6 inline-flex min-h-11 items-center gap-2 rounded-md text-sm font-semibold text-indigo-700 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-600"
+>
+  <span aria-hidden="true">←</span>
+  Volver a productos
+</a>
+
+<h1>Agregar producto</h1>
+
+<form
+  novalidate
+  (submit)="guardar($event)"
+  [attr.aria-busy]="guardando()"
+>
+  @if (cargandoCategorias()) {
+    <p role="status">Cargando categorías...</p>
+  } @else if (errorCategorias(); as mensaje) {
+    <p role="alert">{{ mensaje }}</p>
+  } @else if (categorias().length === 0) {
+    <p role="status">
+      No hay categorías disponibles. Necesitás una categoría para crear productos.
+    </p>
+  }
+
+  <div class="datos-principales">
+    <div>
+      <label for="nombre">Nombre</label>
+
+      <input
+        id="nombre"
+        type="text"
+        [formField]="formulario.nombre"
+        [attr.aria-invalid]="
+          formulario.nombre().touched() && formulario.nombre().invalid()
+        "
+        [attr.aria-describedby]="
+          formulario.nombre().touched() && formulario.nombre().invalid()
+            ? 'nombre-error'
+            : null
+        "
+      />
+
+      @if (formulario.nombre().touched() && formulario.nombre().invalid()) {
+        <p id="nombre-error" role="alert">
+          Ingresá un nombre de entre 1 y 150 caracteres que no sea solo espacios.
+        </p>
+      }
+    </div>
+
+    <div>
+      <label for="descripcion">Descripción</label>
+
+      <textarea
+        id="descripcion"
+        rows="4"
+        [formField]="formulario.descripcion"
+        [attr.aria-invalid]="
+          formulario.descripcion().touched() &&
+          formulario.descripcion().invalid()
+        "
+        [attr.aria-describedby]="
+          formulario.descripcion().touched() &&
+          formulario.descripcion().invalid()
+            ? 'descripcion-error'
+            : null
+        "
+      ></textarea>
+
+      @if (
+        formulario.descripcion().touched() &&
+        formulario.descripcion().invalid()
+      ) {
+        <p id="descripcion-error" role="alert">
+          Ingresá una descripción que no sea solo espacios.
+        </p>
+      }
+    </div>
+
+    <label for="categoria">Categoría</label>
+
+    <select
+      id="categoria"
+      [formField]="formulario.categoriaId"
+      [attr.aria-invalid]="
+        formulario.categoriaId().touched() &&
+        formulario.categoriaId().invalid()
+      "
+      [attr.aria-describedby]="
+        formulario.categoriaId().touched() &&
+        formulario.categoriaId().invalid()
+          ? 'categoria-ayuda categoria-error'
+          : 'categoria-ayuda'
+      "
+    >
+      <option value="" disabled>Seleccioná una categoría</option>
+
+      @for (categoria of categorias(); track categoria.id) {
+        <option [value]="categoria.id">{{ categoria.nombre }}</option>
+      }
+    </select>
+
+    @if (
+      formulario.categoriaId().touched() &&
+      formulario.categoriaId().invalid()
+    ) {
+      <p id="categoria-error" role="alert">
+        Seleccioná una categoría disponible.
+      </p>
+    }
+
+    <p id="categoria-ayuda">
+      Elegí la categoría a la que pertenece el producto.
+    </p>
+  </div>
+
+  <div>
+    <label for="precio">Precio en pesos</label>
+
+    <input
+      id="precio"
+      type="number"
+      step="0.01"
+      [formField]="formulario.precio"
+      [attr.aria-invalid]="
+        formulario.precio().touched() && formulario.precio().invalid()
+      "
+      [attr.aria-describedby]="
+        formulario.precio().touched() && formulario.precio().invalid()
+          ? 'precio-error'
+          : null
+      "
+    />
+
+    @if (formulario.precio().touched() && formulario.precio().invalid()) {
+      <p id="precio-error" role="alert">
+        Ingresá un precio entre 0 y 99999999.99, con hasta dos decimales.
+      </p>
+    }
+  </div>
+
+  <div>
+    <label for="stock">Stock inicial</label>
+
+    <input
+      id="stock"
+      type="number"
+      step="1"
+      [formField]="formulario.stock"
+      [attr.aria-invalid]="
+        formulario.stock().touched() && formulario.stock().invalid()
+      "
+      [attr.aria-describedby]="
+        formulario.stock().touched() && formulario.stock().invalid()
+          ? 'stock-error'
+          : null
+      "
+    />
+
+    @if (formulario.stock().touched() && formulario.stock().invalid()) {
+      <p id="stock-error" role="alert">
+        Ingresá una cantidad entera entre 0 y 2147483647.
+      </p>
+    }
+  </div>
+
+  <div>
+    <label for="imagen">Dirección de la imagen (opcional)</label>
+
+    <input
+      id="imagen"
+      type="text"
+      [formField]="formulario.imagen"
+      aria-describedby="imagen-ayuda"
+    />
+
+    <p id="imagen-ayuda">
+      Ingresá una URL o una ruta de imagen del sitio. Podés dejarla vacía.
+    </p>
+  </div>
+
+  <fieldset>
+    <legend>Estado del producto</legend>
+
+    <div>
+      <input
+        id="disponible"
+        type="checkbox"
+        [formField]="formulario.disponible"
+        aria-describedby="disponible-ayuda"
+      />
+
+      <label for="disponible">Disponible en el catálogo</label>
+
+      <p id="disponible-ayuda">
+        La disponibilidad es independiente de la cantidad de stock.
+      </p>
+    </div>
+
+    <div>
+      <input
+        id="destacado"
+        type="checkbox"
+        [formField]="formulario.destacado"
+      />
+
+      <label for="destacado">Marcar como destacado</label>
+    </div>
+  </fieldset>
+
+  @if (errorGuardado(); as mensaje) {
+    <p role="alert">{{ mensaje }}</p>
+  }
+
+  <button type="submit" [disabled]="guardando()">
+    {{ guardando() ? 'Guardando...' : 'Guardar producto' }}
+  </button>
+</form>
