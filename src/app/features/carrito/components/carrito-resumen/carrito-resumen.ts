@@ -1,11 +1,11 @@
-import { Component, input, signal, output, model } from '@angular/core';
+
+import { Component, input, signal, output, model, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
 import { DineroPipe } from '../../../../shared/pipes/dinero-pipe';
 import { DireccionSugerida } from '../../services/direcciones';
 import { Router } from '@angular/router';
-import { inject } from '@angular/core';
 import { AuthService } from '../../../auth/services/auth';
 
 @Component({
@@ -18,7 +18,7 @@ export class CarritoResumen {
   authService = inject(AuthService);
   private router = inject(Router);
 
-  totalProductos =  input.required<number>();
+  totalProductos = input.required<number>();
   envio = input.required<number>();
   totalCompra = input.required<number>();
   resultadoBusqueda = input<DireccionSugerida[]>([]);
@@ -33,18 +33,17 @@ export class CarritoResumen {
   mostrarDireccion = signal(false);
   direccionSeleccionada = model<string | null>(null);
 
-  direccionABuscar = output<string>(); 
+  direccionABuscar = output<string>();
 
-  buscadorControl = new FormControl(''); // El control del input de texto
+  buscadorControl = new FormControl('');
 
   constructor() {
-    // Escuchamos lo que el usuario escribe, pero le ponemos un "freno" (Debounce)
     this.buscadorControl.valueChanges
       .pipe(
-        filter(valor => (valor ?? '').length > 2), //Solo se llama con mas de 3 letras
-        debounceTime(300), //Recien se llama despues de 0,3 seg
-        distinctUntilChanged(), //Solo se llama si el texto es distinto
-        takeUntilDestroyed() //unsuscribe
+        filter(valor => (valor ?? '').length > 2),
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntilDestroyed()
       )
       .subscribe(termino => {
         this.direccionABuscar.emit(termino ?? '');
@@ -58,29 +57,34 @@ export class CarritoResumen {
 
     if (!this.authService.estaLogueado()) {
       this.router.navigate(
-        ['/signin'], 
-        {queryParams: {returnUrl: '/carrito'}}
+        ['/signin'],
+        { queryParams: { returnUrl: '/carrito' } }
       );
-    return;
+      return;
+    }
+
+    // Acá continúa el proceso de confirmación
+    // si el usuario ya está autenticado.
   }
 
-  aplicarCodigoPostal() {
-  const codigo = this.codigoPostalControl.value.trim().toUpperCase();
-  this.codigoPostal.set(codigo);
+  aplicarCodigoPostal(): void {
+    const codigo = this.codigoPostalControl.value.trim().toUpperCase();
+    this.codigoPostal.set(codigo);
   }
 
-  toggleDireccion() {
+  toggleDireccion(): void {
     this.mostrarDireccion.update(estado => !estado);
+
     if (!this.mostrarDireccion()) {
       this.buscadorControl.setValue('');
-      this.direccionABuscar.emit(''); 
+      this.direccionABuscar.emit('');
     }
   }
 
-  seleccionarDireccion(direccion: string) {
-    this.direccionSeleccionada.set(direccion); // Esto actualiza automáticamente al padre 
-    this.mostrarDireccion.set(false); // Cerramos el menú
-    this.buscadorControl.setValue(''); // Limpiamos el buscador
-    this.direccionABuscar.emit(''); // Limpiamos los resultados
+  seleccionarDireccion(direccion: string): void {
+    this.direccionSeleccionada.set(direccion);
+    this.mostrarDireccion.set(false);
+    this.buscadorControl.setValue('');
+    this.direccionABuscar.emit('');
   }
 }
