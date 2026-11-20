@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import {
   apply,
   form,
@@ -12,7 +12,8 @@ import {
   precioProductoSchema,
 } from '../../forms/producto.schemas';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { distinctUntilChanged, finalize, map, Subscription } from 'rxjs';
 import { EditarProductoFormulario } from '../../models/EditarProductoFormulario';
 import { CatalogoService } from '../../../catalogo/services/catalogo';
 import { ProductosAdminService } from '../../services/productos-admin-service';
@@ -31,9 +32,10 @@ export class EditarProducto implements OnInit {
   private readonly productosService = inject(ProductosAdminService);
   private readonly catalogoService = inject(CatalogoService);
 
-  private readonly productoId = Number(
-    this.route.snapshot.paramMap.get('id'),
-  );
+  private readonly destroyRef = inject(DestroyRef);
+  private productoId = 0;
+  private cargaProducto?: Subscription;
+  private guardadoProducto?: Subscription;
 
   private readonly stockProducto = signal(0);
 
@@ -80,7 +82,16 @@ readonly formulario = form(this.modelo, campos => {
 });
 
   ngOnInit(): void {
-    this.cargarDatos();
+    this.route.paramMap.pipe(
+      map(params => params.get('id')),
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(parametro => {
+      this.cargaProducto?.unsubscribe();
+      this.guardadoProducto?.unsubscribe();
+      this.productoId = Number(parametro);
+      this.cargarDatos();
+    });
   }
 
   cargarDatos(): void {
@@ -103,9 +114,10 @@ readonly formulario = form(this.modelo, campos => {
     this.cargandoProducto.set(true);
     this.catalogoService.cargarCategorias();
 
-    this.productosService.obtenerPorId(this.productoId)
+    this.cargaProducto = this.productosService.obtenerPorId(this.productoId)
       .pipe(
         finalize(() => this.cargandoProducto.set(false)),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         next: producto => {
@@ -180,8 +192,9 @@ readonly formulario = form(this.modelo, campos => {
 
   this.guardando.set(true);
 
-  this.productosService.editarProducto(datos).pipe(
+  this.guardadoProducto = this.productosService.editarProducto(datos).pipe(
     finalize(() => this.guardando.set(false)),
+    takeUntilDestroyed(this.destroyRef),
   ).subscribe({
     next: () => this.cancelar(),
     error: () => {

@@ -9,12 +9,12 @@ export function validarDestino( direccion: unknown, codigoPostal: unknown,) {
     throw new HttpError(400, 'El código postal es obligatorio');
   }
 
-  const codigoNormalizado = codigoPostal.trim().toUpperCase();
+  const codigoNormalizado = codigoPostal.replace(/\s+/g, '').toUpperCase();
 
-  const formatoValido = /^(?:[0-9]{4}|[A-Z][0-9]{4}[A-Z]{3})$/.test(codigoNormalizado);
+  const formatoValido = /^(?:[0-9]{4}|[A-Z][0-9]{4}(?:[A-Z]{3})?)$/.test(codigoNormalizado);
 
   if (!formatoValido) {
-    throw new HttpError( 400, 'Ingresá un código postal de 4 números o un CPA completo',);
+    throw new HttpError(400, 'Ingresá 4 números, una letra y 4 números (X5000), o un CPA completo');
   }
   return {
     direccion: direccion.trim(),

@@ -23,7 +23,7 @@
     @for (categoria of categorias(); track categoria.id) {
       <li class="min-w-0">
         <a
-          [href]="'/catalogo?categoria=' + categoria.id"
+          [routerLink]="['/catalogo']" [queryParams]="{ categoria: categoria.id }"
           [attr.aria-label]="'Explorar productos de ' + categoria.nombre"
           class="group flex h-full flex-col overflow-hidden rounded-xl border border-gray-300 bg-white transition-colors duration-200 hover:border-gray-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-600 motion-reduce:transition-none lg:flex-row"
         >

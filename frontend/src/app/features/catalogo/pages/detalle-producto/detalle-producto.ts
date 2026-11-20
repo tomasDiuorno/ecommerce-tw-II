@@ -1,5 +1,5 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -20,7 +20,7 @@ export class DetalleProducto implements OnInit {
   private readonly productosService = inject(ProductosService);
   private readonly carrito = inject(CarritoService);
   private readonly destroyRef = inject(DestroyRef);
-
+  private readonly location = inject(Location);
   readonly producto = signal<Producto | undefined>(undefined);
   readonly cantidad = signal(1);
   readonly cargando = signal(true);
@@ -75,6 +75,10 @@ export class DetalleProducto implements OnInit {
   disminuir(): void {
     this.cantidad.update(cantidad => Math.max(1, cantidad - 1));
   }
+
+  volver(): void {
+  this.location.back();
+}
 
   agregarAlCarrito(producto: Producto): void {
     this.carrito.agregarProducto(producto, this.cantidad());

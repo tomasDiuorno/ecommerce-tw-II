@@ -40,36 +40,44 @@ export class GestionarStock implements OnInit {
     });
   });
   ngOnInit(): void {
-  const parametro = this.route.snapshot.paramMap.get('id');
-  const id = Number(parametro);
+    this.route.paramMap.pipe(
+      map(params => params.get('id')),
+      distinctUntilChanged(),
+      switchMap(parametro => {
+        this.operacion?.unsubscribe();
+        this.producto.set(null);
+        this.error.set(null);
+        this.mensajeExito.set(null);
+        this.formularioStock().reset({ cantidad: null });
+        this.cargando.set(false);
 
-  if (
-    !parametro ||
-    !/^\d+$/.test(parametro) ||
-    !Number.isSafeInteger(id) ||
-    id <= 0
-  ) {
-    this.error.set('El identificador del producto no es válido.');
-    this.cargando.set(false);
-    return;
-  }
+        const id = Number(parametro);
+        if (
+          !parametro ||
+          !/^\d+$/.test(parametro) ||
+          !Number.isSafeInteger(id) ||
+          id <= 0
+        ) {
+          this.error.set('El identificador del producto no es válido.');
+          return EMPTY;
+        }
 
-  this.productosService.obtenerPorId(id)
-    .pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => this.cargando.set(false)), //Es como un finally
-    )
-    .subscribe({
-      next: producto => {
-        this.producto.set(producto);
-      },
-      error: (error: unknown) => {
-        this.error.set(
-          this.mensajeError(error, 'No se pudo cargar el producto.'),
+        this.cargando.set(true);
+        return this.productosService.obtenerPorId(id).pipe(
+          catchError((error: unknown) => {
+            this.error.set(
+              this.mensajeError(error, 'No se pudo cargar el producto.'),
+            );
+            return EMPTY;
+          }),
+          finalize(() => this.cargando.set(false)),
         );
-      },
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(producto => {
+      this.producto.set(producto);
     });
-}
+  }
 
   agregarStock(evento?: Event): void {
     evento?.preventDefault();
