@@ -11,4 +11,5 @@ export interface UsuarioAutenticado {
   nombre: string;
   apellido: string;
   direccion: string;
+  rol: 'user' | 'admin';
 }
