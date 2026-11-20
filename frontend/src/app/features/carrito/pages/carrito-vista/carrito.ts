@@ -1,6 +1,7 @@
+
 import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   catchError, debounceTime, distinctUntilChanged,
   finalize, map, of, Subject, switchMap, tap,
@@ -21,6 +22,7 @@ import { itemCarrito } from '../../models/item-carrito';
 export class Carrito {
   protected readonly carritoService = inject(CarritoService);
   private readonly direccionesService = inject(DireccionesService);
+  private readonly router = inject(Router);
 
   protected readonly resultadosActuales = signal<DireccionSugerida[]>([]);
   protected readonly buscandoDireccion = signal(false);
@@ -35,7 +37,7 @@ export class Carrito {
         map(texto => texto.trim()),
         debounceTime(300),
         distinctUntilChanged(),
-        tap(() => this.errorDireccion.set(null)), //Bora el mensaje de error luego de que pasa los filtros anteriores
+        tap(() => this.errorDireccion.set(null)),
         switchMap(termino => {
           if (termino.length < 3) {
             return of<DireccionSugerida[]>([]);
@@ -68,5 +70,9 @@ export class Carrito {
 
   eliminarProducto(item: itemCarrito): void {
     this.carritoService.eliminarProducto(item);
+  }
+
+  realizarPedido(): void {
+    this.router.navigate(['/checkout']);
   }
 }

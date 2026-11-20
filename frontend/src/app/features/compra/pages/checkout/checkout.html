@@ -1,0 +1,174 @@
+
+<div class="max-w-3xl mx-auto px-6 py-12">
+  <h1 class="text-3xl font-bold mb-2">Finalizar compra</h1>
+
+  <p class="text-gray-500 mb-8">
+    Completá los datos para simular tu compra.
+  </p>
+
+  <form
+    [formGroup]="formulario"
+    class="bg-white border border-gray-200 rounded-lg p-6"
+  >
+    <h2 class="text-xl font-semibold mb-6">
+      Datos de facturación
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+      <div>
+        <label for="nombre" class="block mb-2">Nombre</label>
+        <input
+          id="nombre"
+          type="text"
+          formControlName="nombre"
+          placeholder="Ingresá tu nombre"
+          class="w-full border rounded-md p-3"
+        >
+        @if (formulario.controls.nombre.invalid &&
+             formulario.controls.nombre.touched) {
+          <p class="text-red-600 text-sm mt-1">
+            El nombre es obligatorio y debe tener al menos 2 caracteres.
+          </p>
+        }
+      </div>
+
+      <div>
+        <label for="apellido" class="block mb-2">Apellido</label>
+        <input
+          id="apellido"
+          type="text"
+          formControlName="apellido"
+          placeholder="Ingresá tu apellido"
+          class="w-full border rounded-md p-3"
+        >
+        @if (formulario.controls.apellido.invalid &&
+             formulario.controls.apellido.touched) {
+          <p class="text-red-600 text-sm mt-1">
+            El apellido es obligatorio y debe tener al menos 2 caracteres.
+          </p>
+        }
+      </div>
+
+      <div>
+        <label for="dni" class="block mb-2">DNI</label>
+        <input
+          id="dni"
+          type="text"
+          formControlName="dni"
+          placeholder="Ingresá un DNI ficticio"
+          class="w-full border rounded-md p-3"
+        >
+        @if (formulario.controls.dni.invalid &&
+             formulario.controls.dni.touched) {
+          <p class="text-red-600 text-sm mt-1">
+            El DNI debe contener 7 u 8 números.
+          </p>
+        }
+      </div>
+
+      <div>
+        <label for="email" class="block mb-2">Correo electrónico</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="ejemplo@correo.com"
+          class="w-full border rounded-md p-3"
+        >
+        @if (formulario.controls.email.invalid &&
+             formulario.controls.email.touched) {
+          <p class="text-red-600 text-sm mt-1">
+            Ingresá un correo electrónico válido.
+          </p>
+        }
+      </div>
+    </div>
+
+    <h2 class="text-xl font-semibold mt-8 mb-6">
+      Pago simulado
+    </h2>
+
+    <p class="text-sm text-gray-500 mb-4">
+      No ingreses datos bancarios reales. Esta compra es una simulación.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+      <div class="md:col-span-2">
+        <label for="tarjeta" class="block mb-2">
+          Número de tarjeta ficticia
+        </label>
+        <input
+          id="tarjeta"
+          type="text"
+          formControlName="tarjeta"
+          placeholder="0000000000000000"
+          autocomplete="off"
+          class="w-full border rounded-md p-3"
+        >
+        @if (formulario.controls.tarjeta.invalid &&
+             formulario.controls.tarjeta.touched) {
+          <p class="text-red-600 text-sm mt-1">
+            Ingresá exactamente 16 números ficticios, sin espacios.
+          </p>
+        }
+      </div>
+
+      <div>
+        <label for="vencimiento" class="block mb-2">
+          Vencimiento ficticio
+        </label>
+        <input
+          id="vencimiento"
+          type="text"
+          formControlName="vencimiento"
+          placeholder="MM/AA"
+          autocomplete="off"
+          class="w-full border rounded-md p-3"
+        >
+        @if (formulario.controls.vencimiento.invalid &&
+             formulario.controls.vencimiento.touched) {
+          <p class="text-red-600 text-sm mt-1">
+            Ingresá una fecha en formato MM/AA.
+          </p>
+        }
+      </div>
+
+      <div>
+        <label for="seguridad" class="block mb-2">
+          Código de seguridad ficticio
+        </label>
+        <input
+          id="seguridad"
+          type="text"
+          formControlName="seguridad"
+          placeholder="000"
+          autocomplete="off"
+          class="w-full border rounded-md p-3"
+        >
+        @if (formulario.controls.seguridad.invalid &&
+             formulario.controls.seguridad.touched) {
+          <p class="text-red-600 text-sm mt-1">
+            Ingresá exactamente 3 números ficticios.
+          </p>
+        }
+      </div>
+    </div>
+@if (errorCompra()) {
+  <p class="text-red-600 text-sm mt-4">
+    {{ errorCompra() }}
+  </p>
+}
+   <button
+  type="button"
+  (click)="confirmarCompra()"
+  [disabled]="formulario.invalid || procesandoCompra()"
+  class="w-full mt-8 bg-indigo-500 text-white py-3 rounded-md
+         hover:bg-indigo-600 transition-colors cursor-pointer
+         disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  Confirmar compra
+</button>
+  </form>
+</div>

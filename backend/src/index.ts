@@ -12,6 +12,7 @@ import categoriaRoutes from "./routes/categoriaRuta.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import envioRoutes from './routes/envioRuta.js';
 
+import compraRoutes from './routes/compraRuta.js';
 const app = express();
 const PORT = 3000;
 
@@ -54,6 +55,8 @@ app.use('/api/envios', envioRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/productos", productoRoutes);
 app.use("/api/categorias", categoriaRoutes);
+
+app.use('/api/compras', compraRoutes);
 
 app.get("/test-session", (req: Request, res: Response) => {
     req.session.prueba = true;

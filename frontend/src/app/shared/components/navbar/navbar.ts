@@ -16,10 +16,12 @@ private readonly router = inject(Router);
 private readonly carritoService = inject(CarritoService);
 private readonly catalogoService = inject(CatalogoService);
 private readonly authService = inject(AuthService);
+protected readonly usuarioLogueado = this.authService.usuarioLogueado;
+
 private readonly modeloBusqueda = signal({ texto: '' });
 protected readonly formBusqueda = form(this.modeloBusqueda);
 protected readonly cantidad = this.carritoService.cantidad;
-protected readonly usuarioLogueado = this.authService.usuarioLogueado;
+
 readonly categorias = this.catalogoService.categorias;
 
  protected readonly menuMovilAbierto = signal(false);

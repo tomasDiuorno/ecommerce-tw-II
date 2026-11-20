@@ -68,5 +68,6 @@
     [tieneCotizacion]="carritoService.cotizacion() !== null"
     [carritoVacio]="carritoService.cantidad() === 0"
     (direccionABuscar)="buscarDireccion($event)"
+    (confirmarPedido)="realizarPedido()"
     ></app-carrito-resumen>
 </div>

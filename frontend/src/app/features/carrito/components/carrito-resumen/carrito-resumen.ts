@@ -1,4 +1,5 @@
-import { Component, input, linkedSignal, model, signal } from '@angular/core';
+
+import { Component, input, linkedSignal, model, output, signal } from '@angular/core';
 import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
 import { form, FormField } from '@angular/forms/signals';
 
@@ -26,31 +27,38 @@ export class CarritoResumen {
 
   protected readonly mostrarDireccion = signal(false);
   private readonly modeloBusqueda = signal({ texto: '' });
-  private readonly modeloCodigoPostal = linkedSignal(() => ({ texto: this.codigoPostal() }));
+  private readonly modeloCodigoPostal = linkedSignal(() => ({
+    texto: this.codigoPostal()
+  }));
 
   protected readonly formularioBusqueda = form(this.modeloBusqueda);
   protected readonly formularioCodigoPostal = form(this.modeloCodigoPostal);
 
-  // Comunica el texto al padre, que administra la espera y la consulta HTTP.
   readonly direccionABuscar = outputFromObservable(
     toObservable(this.formularioBusqueda.texto().value),
   );
+  readonly confirmarPedido = output<void>();
+
   aplicarCodigoPostal(): void {
-    this.codigoPostal.set(this.formularioCodigoPostal.texto().value().trim().toUpperCase());
+    this.codigoPostal.set(
+      this.formularioCodigoPostal.texto().value().trim().toUpperCase()
+    );
   }
 
   toggleDireccion(): void {
     this.mostrarDireccion.update(estado => !estado);
 
     if (!this.mostrarDireccion()) {
-      this.formularioBusqueda().reset({ texto: '' }); // ya notifica al padre
+      this.formularioBusqueda().reset({ texto: '' });
     }
   }
 
   seleccionarDireccion(sugerida: DireccionSugerida): void {
-  this.direccionSeleccionada.set(sugerida.direccion);
-  this.codigoPostal.set(sugerida.codigoPostal?.trim().toUpperCase() ?? '');
-  this.mostrarDireccion.set(false);
-  this.formularioBusqueda().reset({ texto: '' });
-}
+    this.direccionSeleccionada.set(sugerida.direccion);
+    this.codigoPostal.set(
+      sugerida.codigoPostal?.trim().toUpperCase() ?? ''
+    );
+    this.mostrarDireccion.set(false);
+    this.formularioBusqueda().reset({ texto: '' });
+  }
 }
