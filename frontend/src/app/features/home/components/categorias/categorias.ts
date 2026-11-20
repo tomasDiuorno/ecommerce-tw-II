@@ -1,8 +1,9 @@
 import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Categoria } from '../../../../shared/models/categoria';
 
 @Component({
-  imports: [],
+  imports: [RouterLink],
   selector: 'app-categorias',
   styleUrl: './categorias.css',
   templateUrl: './categorias.html',

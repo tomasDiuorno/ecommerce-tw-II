@@ -2,12 +2,12 @@
 @let busquedaActual = busqueda();
 @let categoria = busquedaActual
   ? 'Resultados para "' + busquedaActual + '"'
-  : (listado[0]?.categoria || 'Catálogo');
+  : (categoriaId() ? (listado[0]?.categoria || 'Catálogo') : 'Catálogo');
 
 <main class="mx-auto min-h-[70vh] max-w-screen-2xl px-5 pb-16 pt-6 sm:px-8 md:px-16 md:pb-24 lg:px-24 xl:px-32" aria-labelledby="titulo-categoria">
   <nav aria-label="Ruta de navegación" class="mb-8 text-sm sm:mb-12">
     <ol class="flex flex-wrap items-center gap-3 text-gray-600">
-      <li><a href="./" class="inline-flex min-h-11 items-center rounded-sm underline-offset-4 hover:text-indigo-700 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-600">Inicio</a></li>
+      <li><a routerLink="/" class="inline-flex min-h-11 items-center rounded-sm underline-offset-4 hover:text-indigo-700 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-600">Inicio</a></li>
       <li aria-hidden="true"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m9 5 7 7-7 7" /></svg></li>
       <li class="min-w-0 break-words font-medium text-gray-900" aria-current="page">{{ categoria }}</li>
     </ol>
@@ -24,7 +24,7 @@
         <h1 #tituloCategoria id="titulo-categoria" tabindex="-1" style="font-family: 'Chakra Petch', sans-serif" class="break-words pr-2 text-4xl font-bold uppercase italic leading-[0.95] tracking-tight text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-400 sm:text-5xl xl:text-6xl">{{ categoria }}</h1>
         <p class="mt-5 max-w-xl text-base leading-7 text-gray-300">Explorá los productos, compará sus detalles y elegí lo que va con vos.</p>
       </div>
-      <a href="./" class="inline-flex min-h-12 max-w-full shrink-0 items-center gap-3 border border-indigo-400 bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-300 motion-reduce:transition-none">
+      <a routerLink="/" class="inline-flex min-h-12 max-w-full shrink-0 items-center gap-3 border border-indigo-400 bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-300 motion-reduce:transition-none">
         <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7M5 12h14" /></svg>
         Explorar otras categorías
       </a>
@@ -79,7 +79,7 @@
         } @else {
           Podés explorar otras categorías para encontrar lo que estás buscando.
         }</p>
-        <a href="./" class="mt-7 inline-flex min-h-12 items-center justify-center rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-600">Explorar categorías</a>
+        <a routerLink="/" class="mt-7 inline-flex min-h-12 items-center justify-center rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-600">Explorar categorías</a>
       </div>
     }
   </section>

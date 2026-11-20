@@ -16,7 +16,7 @@ export function calcularCostoEnvio( subtotal: number, zona: ZonaEnvio,): number 
 }
 
 export function determinarZona(codigoPostal: string): ZonaEnvio {
-  const esCpa = codigoPostal.length === 8;
+  const esCpa = /^[A-Z]/.test(codigoPostal);
 
   const numeroPostal = Number(esCpa ? codigoPostal.slice(1, 5) : codigoPostal,);
 
