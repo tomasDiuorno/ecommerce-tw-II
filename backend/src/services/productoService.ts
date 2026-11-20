@@ -3,9 +3,18 @@ import { HttpError } from "../middlewares/HttpError.js";
 import { crearProductoRepositorio, eliminarProductoRepositorio } from '../repositories/productoRepositorio.js';
 import { existeCategoriaRepositorio } from '../repositories/categoriaRepositorio.js';
 import { validarCrearProducto } from '../validators/productoValidator.js';
+import { validarEditarProducto } from '../validators/editarProductoValidator.js'
 import { Producto } from "../models/productoModel.js";
-import { ResultadoStock } from "../models/resultadoStock.js";
-import { listarProductosDisponibles, listarProductosDestacados, agregarStock, quitarStock, obtenerProductoPorIdRepositorio, obtenerTodosLosProductos, deshabilitarDisponibilidad } from "../repositories/productoRepositorio.js";
+import { listarProductosDisponibles, 
+        listarProductosDestacados,
+        agregarStock,
+        quitarStock,
+        obtenerProductoPorIdRepositorio,
+        obtenerTodosLosProductos,
+        deshabilitarDisponibilidad,
+        editarProducto 
+        } from "../repositories/productoRepositorio.js";
+import { EditarProductoDTO } from "../models/dto/EditarProductoDTO.js";
 
 export function obtenerTodosLosProductosDisponiblesServicio(categoria?: unknown, busqueda?: string): Promise<Producto[]> {
     let categoriaId: number | null = null;
@@ -78,7 +87,7 @@ export async function quitarStockProductoServicio(id: number, cantidad: number):
 export async function crearProductoServicio(datos: unknown,): Promise<Producto> {
   const productoValidado = validarCrearProducto(datos);
 
-  const categoriaExiste = await existeCategoriaRepositorio(productoValidado.categoriaId,);
+  const categoriaExiste = await existeCategoriaRepositorio(productoValidado.categoriaId);
 
   if (!categoriaExiste) {
     throw new HttpError(400, 'La categoría seleccionada no existe');
@@ -87,6 +96,22 @@ export async function crearProductoServicio(datos: unknown,): Promise<Producto> 
   const id = await crearProductoRepositorio(productoValidado);
 
   return obtenerProductoPorIdServicio(id);
+}
+
+export async function editarProductoServicio(producto: unknown): Promise<Producto> {
+    const productoValidado = validarEditarProducto(producto);
+  const categoriaExiste = await existeCategoriaRepositorio(productoValidado.categoriaId);
+
+   if (!categoriaExiste) {
+    throw new HttpError(400, 'La categoría seleccionada no existe');
+  }
+
+  const id = await editarProducto(productoValidado);
+   if (id === undefined) {
+    throw new HttpError(404, 'El producto no existe');
+  }
+
+    return obtenerProductoPorIdServicio(id);
 }
 
 export async function eliminarProductoServicio(id: number,): Promise<void> {

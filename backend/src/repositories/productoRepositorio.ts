@@ -1,4 +1,5 @@
 import { pool } from '../config/database.js';
+import { EditarProductoDTO } from '../models/dto/EditarProductoDTO.js';
 import type { Producto, CrearProducto } from '../models/productoModel.js';
 import { ResultadoQuitarStock } from '../models/resultadoQuitarStock.js';
 import { ResultadoStock } from '../models/resultadoStock.js';
@@ -9,6 +10,7 @@ const SELECT_PRODUCTOS = `
     p.nombre,
     p.descripcion,
     c.nombre AS categoria,
+    p.categoria_id AS "categoriaId",
     p.precio::float8 AS precio,
     p.imagen,
     p.stock,
@@ -109,7 +111,7 @@ export async function quitarStock(
     const productoActualizado = actualizado.rows[0];
 
     if (!productoActualizado) {
-      throw new Error('No se pudo actualizar el producto bloqueado');
+      throw new Error('No se pudo actualizar el producto');
     }
 
     await client.query('COMMIT');
@@ -168,10 +170,31 @@ export async function crearProductoRepositorio(producto: CrearProducto,): Promis
   const productoCreado = resultado.rows[0];
 
   if (productoCreado === undefined) {
-    throw new Error('La inserción no devolvió el ID del producto');
+    throw new Error('El producto no existe');
   }
 
   return productoCreado.id;
+}
+
+export async function editarProducto(producto: EditarProductoDTO): Promise<number | undefined> {
+  const resultado = await pool.query<{ id: number }>(
+    `UPDATE productos SET nombre = $1, descripcion = $2, categoria_id = $3, precio = $4, imagen = $5, disponible = (stock > 0 AND $6), destacado = $7
+    WHERE id = $8
+    RETURNING id`,
+    [
+      producto.nombre,
+      producto.descripcion,
+      producto.categoriaId,
+      producto.precio,
+      producto.imagen,
+      producto.disponible,
+      producto.destacado,
+      producto.id
+    ],
+  );
+
+  return resultado.rows[0]?.id;
+
 }
 
 export async function eliminarProductoRepositorio(id: number,): Promise<boolean> {
