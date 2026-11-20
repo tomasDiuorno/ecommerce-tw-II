@@ -5,3 +5,10 @@ export interface Usuario {
     apellido: string;
     direccion: string;
 }
+export interface UsuarioAutenticado {
+  id: number;
+  email: string;
+  nombre: string;
+  apellido: string;
+  direccion: string;
+}

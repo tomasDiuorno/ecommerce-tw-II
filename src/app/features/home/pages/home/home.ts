@@ -9,6 +9,7 @@ import { Producto } from '../../../../shared/models/producto';
 import { CarritoService } from '../../../carrito/services/carrito';
 import { Destacados } from '../../components/destacados/destacados';
 import { Categorias } from '../../components/categorias/categorias';
+import { ProductosService } from '../../../../shared/services/productosService';
 
 @Component({
   imports: [
@@ -22,14 +23,10 @@ import { Categorias } from '../../components/categorias/categorias';
   templateUrl: './home.html',
 })
 export class Home {
+  private readonly productosServices = inject(ProductosService);
   private readonly catalogo = inject(CatalogoService);
   private readonly carrito = inject(CarritoService);
 
-  productosDestacados = computed(() =>
-    this.catalogo.products().filter(
-      producto => producto.destacado
-    )
-  );
 
   categorias = this.catalogo.categorias;
   

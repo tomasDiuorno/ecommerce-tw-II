@@ -4,10 +4,10 @@ import { UsuarioDB } from '../models/usuarioModel.js';
 
 
 export async function buscarUsuarioPorEmail(
-    email: string
+  email: string
 ): Promise<UsuarioDB | null> {
 
-    const resultado = await pool.query<UsuarioDB>(`
+  const resultado = await pool.query<UsuarioDB>(`
     SELECT
       id,
       email,
@@ -20,15 +20,15 @@ export async function buscarUsuarioPorEmail(
     LIMIT 1;
   `, [email]);
 
-    return resultado.rows[0] ?? null;
+  return resultado.rows[0] ?? null;
 }
 
 // Registrar un usuario
 export async function crearUsuario(
-    usuario: Omit<UsuarioDB, 'id'>
+  usuario: Omit<UsuarioDB, 'id'>
 ): Promise<UsuarioDB> {
 
-    const resultado = await pool.query<UsuarioDB>(`
+  const resultado = await pool.query<UsuarioDB>(`
     INSERT INTO usuarios (
       email,
       contrasenia_hash,
@@ -45,12 +45,23 @@ export async function crearUsuario(
       apellido,
       direccion;
   `, [
-        usuario.email,
-        usuario.contraseniaHash,
-        usuario.nombre,
-        usuario.apellido,
-        usuario.direccion
-    ]);
+    usuario.email,
+    usuario.contraseniaHash,
+    usuario.nombre,
+    usuario.apellido,
+    usuario.direccion
+  ]);
 
-    return resultado.rows[0];
+  return resultado.rows[0];
+}
+
+export async function buscarUsuarioPorId(id: number): Promise<UsuarioDB | null> {
+  const resultado = await pool.query<UsuarioDB>(`
+    SELECT id, email, contrasenia_hash AS "contraseniaHash", nombre, apellido, direccion
+    FROM usuarios
+    WHERE id = $1
+    LIMIT 1;
+  `, [id]);
+
+  return resultado.rows[0] ?? null;
 }

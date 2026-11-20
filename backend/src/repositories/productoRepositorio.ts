@@ -1,5 +1,8 @@
 import { pool } from '../config/database.js';
-import type { Producto } from '../models/productoModel.js';
+import { EditarProductoDTO } from '../models/dto/EditarProductoDTO.js';
+import type { Producto, CrearProducto } from '../models/productoModel.js';
+import { ResultadoQuitarStock } from '../models/resultadoQuitarStock.js';
+import { ResultadoStock } from '../models/resultadoStock.js';
 
 const SELECT_PRODUCTOS = `
   SELECT
@@ -7,8 +10,10 @@ const SELECT_PRODUCTOS = `
     p.nombre,
     p.descripcion,
     c.nombre AS categoria,
+    p.categoria_id AS "categoriaId",
     p.precio::float8 AS precio,
     p.imagen,
+    p.stock,
     p.disponible,
     p.destacado
   FROM productos p
@@ -19,7 +24,7 @@ function escaparComodines(texto: string): string {
   return texto.replace(/[\\%_]/g, '\\$&');
 }
 
-export async function listarProductos(
+export async function listarProductosDisponibles(
   categoriaId: number | null,
   busqueda: string | null,
 ): Promise<Producto[]> {
@@ -36,6 +41,17 @@ export async function listarProductos(
   return resultado.rows;
 }
 
+export async function obtenerTodosLosProductos(): Promise<Producto[]> {
+  const resultado = await pool.query<Producto>(SELECT_PRODUCTOS);
+  return resultado.rows;
+}
+
+export async function obtenerProductoPorIdRepositorio(id: number): Promise<Producto | undefined> {
+  const resultado = await pool.query<Producto>(
+    `${SELECT_PRODUCTOS}  WHERE p.id = $1`, [id]);
+  return resultado.rows[0];
+}
+
 export async function listarProductosDestacados(): Promise<Producto[]> {
   const resultado = await pool.query<Producto>(
     `${SELECT_PRODUCTOS}
@@ -45,24 +61,84 @@ export async function listarProductosDestacados(): Promise<Producto[]> {
   return resultado.rows;
 }
 
-export async function agregarStock(id:number, stock:number):Promise<void>{
-  await pool.query(
+export async function agregarStock(id: number, stock: number): Promise<boolean> {
+  const resultado = await pool.query(
     `UPDATE productos SET stock = stock + $1 WHERE productos.id = $2`,
-     [stock, id]
+    [stock, id]
+  );
+
+  return resultado.rowCount === 1;
+}
+
+export async function quitarStock(
+  id: number,
+  cantidad: number,
+): Promise<ResultadoQuitarStock> {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    const resultado = await client.query<{ stock: number }>(
+      'SELECT stock FROM productos WHERE id = $1 FOR UPDATE',
+      [id],
+    );
+
+    const producto = resultado.rows[0];
+
+    if (!producto) {
+      await client.query('ROLLBACK');
+      return { estado: 'no-encontrado' };
+    }
+
+    if (producto.stock < cantidad) {
+      await client.query('ROLLBACK');
+      return { estado: 'stock-insuficiente' };
+    }
+
+    const actualizado = await client.query<{ stock: number }>(
+      `UPDATE productos
+       SET stock = stock - $1,
+        disponible = CASE
+      WHEN stock - $1 = 0 THEN false
+      ELSE disponible
+    END
+       WHERE id = $2
+       RETURNING stock`,
+      [cantidad, id],
+    );
+
+    const productoActualizado = actualizado.rows[0];
+
+    if (!productoActualizado) {
+      throw new Error('No se pudo actualizar el producto');
+    }
+
+    await client.query('COMMIT');
+
+    return {
+      estado: 'actualizado',
+      stock: productoActualizado.stock,
+    };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+export async function deshabilitarDisponibilidad(id: number): Promise<void> {
+  const resultado = await pool.query(
+    `UPDATE productos SET disponible = false WHERE id = $1`,
+    [id]
   );
 }
 
-export async function quitarStock(id:number, stock:number):Promise<void>{
-  await pool.query(
-    `UPDATE productos SET stock = stock - $1 WHERE id = $2 AND stock >= $1`,
-     [stock, id]
-  );
-}
+export interface ProductoParaEnvio { id: number; precio: number; }
 
-export interface ProductoParaEnvio {id: number;precio: number;}
-
-export async function obtenerProductosParaEnvio( ids: number[],):
- Promise<ProductoParaEnvio[]> {
+export async function obtenerProductosParaEnvio(ids: number[],):
+  Promise<ProductoParaEnvio[]> {
   const resultado = await pool.query<ProductoParaEnvio>(
     `SELECT id, precio::float8 AS precio
      FROM productos
@@ -72,4 +148,60 @@ export async function obtenerProductosParaEnvio( ids: number[],):
   );
 
   return resultado.rows;
+}
+
+export async function crearProductoRepositorio(producto: CrearProducto,): Promise<number> {
+  const resultado = await pool.query<{ id: number }>(
+    `INSERT INTO productos (nombre, descripcion, categoria_id, precio, imagen, stock, disponible, destacado)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    RETURNING id`,
+    [
+      producto.nombre,
+      producto.descripcion,
+      producto.categoriaId,
+      producto.precio,
+      producto.imagen,
+      producto.stock,
+      producto.disponible,
+      producto.destacado,
+    ],
+  );
+
+  const productoCreado = resultado.rows[0];
+
+  if (productoCreado === undefined) {
+    throw new Error('El producto no existe');
+  }
+
+  return productoCreado.id;
+}
+
+export async function editarProducto(producto: EditarProductoDTO): Promise<number | undefined> {
+  const resultado = await pool.query<{ id: number }>(
+    `UPDATE productos SET nombre = $1, descripcion = $2, categoria_id = $3, precio = $4, imagen = $5, disponible = (stock > 0 AND $6), destacado = $7
+    WHERE id = $8
+    RETURNING id`,
+    [
+      producto.nombre,
+      producto.descripcion,
+      producto.categoriaId,
+      producto.precio,
+      producto.imagen,
+      producto.disponible,
+      producto.destacado,
+      producto.id
+    ],
+  );
+
+  return resultado.rows[0]?.id;
+
+}
+
+export async function eliminarProductoRepositorio(id: number,): Promise<boolean> {
+  const resultado = await pool.query(
+    'DELETE FROM productos WHERE id = $1',
+    [id],
+  );
+
+  return resultado.rowCount === 1;
 }

@@ -1,58 +1,41 @@
 // catalogo.ts (service)
-import { computed, Injectable, signal, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Producto } from '../../../shared/models/producto';
+import {  Injectable, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Categoria } from '../../../shared/models/categoria';
-import { Categorias } from '../../home/components/categorias/categorias';
+import { finalize } from 'rxjs';
+
 @Injectable({ providedIn: 'root' })
 export class CatalogoService {
 
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000/api/productos';
+
   private categoriaApiUrl = 'http://localhost:3000/api/categorias';
 
-  private productsSignal = signal<Producto[]>([]);
+ 
 private readonly categoriasSignal = signal<Categoria[]>([]);
 readonly categorias = this.categoriasSignal.asReadonly();
-  readonly products = this.productsSignal.asReadonly();
-  
 
-  obtenerPorId(id: number): Producto | undefined {
-    return this.products().find(producto => producto.id === id);
-  }
+private readonly cargandoSignal = signal(false);
+readonly cargando = this.cargandoSignal.asReadonly();
 
+private readonly errorSignal = signal<string | null>(null);
+readonly error = this.errorSignal.asReadonly();
 
   cargarCategorias(): void {
-    this.http.get<Categoria[]>(this.categoriaApiUrl).subscribe({
-      next: (categorias) => {
-        this.categoriasSignal.set(categorias);
-      },
-      error: (error) => {
-        console.log("No se puedieron cargar las categorias", error);
+      if (this.cargandoSignal()) {
+        return;
       }
-      });
+    this.cargandoSignal.set(true);
+    this.errorSignal.set(null);
+    this.categoriasSignal.set([]);
+
+    this.http.get<Categoria[]>(this.categoriaApiUrl)
+    .pipe( finalize(() => {this.cargandoSignal.set(false);}))
+    .subscribe({next: (categorias) => {this.categoriasSignal.set(categorias);}
+    ,error: () => {this.errorSignal.set('No se pudieron cargar las categorías. Recargá la página para reintentar.');
+      }});
     }
 
-  cargarProductos(categoriaId?: number, busqueda?: string): void {
-  let params = new HttpParams();
-  if (categoriaId !== undefined) {
-    params = params.set('categoria', categoriaId);
-  }
-  if (busqueda !== undefined) {
-    params = params.set('busqueda', busqueda);
-  }
 
-  this.http.get<Producto[]>(this.apiUrl, { params }).subscribe({
-    next: (productos) => this.productsSignal.set(productos),
-    error: (error) => console.error('Error al obtener los productos:', error),
-  });
-}
 
-  alternarDisponibilidad(productId: number): void {
-  this.productsSignal.update(products =>
-    products.map(p =>
-      p.id === productId ? { ...p, disponible: !p.disponible } : p
-    )
-  );
-}
 }

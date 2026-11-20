@@ -1,10 +1,28 @@
 import { Router } from 'express';
 
-import { obtenerProductos, obtenerProductosDestacados } from '../controllers/productoControlador.js';
+import {
+  obtenerProductosDisponibles,
+  obtenerProductosDestacados,
+  obtenerProductoPorId,
+  obtenerProductos,
+  agregarStock,
+  quitarStock,
+  crearProducto,
+  editarProducto,
+  eliminarProducto,
+} from '../controllers/productoControlador.js';
 
 const router = Router();
 
-router.get('/', obtenerProductos);
+router.post('/', crearProducto);
+router.delete('/:id', eliminarProducto);
+router.get('/', obtenerProductosDisponibles);
 router.get('/destacados', obtenerProductosDestacados);
+router.get('/todosLosProductos', obtenerProductos);
+router.get('/:id', obtenerProductoPorId);
+router.post('/agregarStock/:id', agregarStock);
+router.post('/quitarStock/:id', quitarStock);
+router.put('/editarProducto', editarProducto);
+
 
 export default router;

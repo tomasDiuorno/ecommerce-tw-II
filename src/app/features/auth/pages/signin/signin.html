@@ -1,5 +1,5 @@
-
 <div class="max-w-md mx-auto mt-16 px-6 mb-16">
+
   <h1 class="text-3xl font-medium mb-2">
     Iniciar sesión
   </h1>
@@ -8,52 +8,43 @@
     Iniciá sesión para continuar con tu compra.
   </p>
 
-  <form
-    (ngSubmit)="iniciarSesion()"
-    class="flex flex-col gap-4"
-  >
-    <input
-      name="email"
-      type="email"
-      [(ngModel)]="email"
-      placeholder="Correo electrónico"
-      autocomplete="email"
-      required
-      class="border border-gray-300 px-3 py-3 rounded"
+  <form (ngSubmit)="iniciarSesion()" class="flex flex-col gap-4">
+
+    <!-- Email -->
+    <input name="email" type="email" [(ngModel)]="email"
+      placeholder="Correo electrónico" autocomplete="email" required
+      class="border border-gray-300 px-3 py-3 rounded focus:outline-indigo-500 focus:ring-1 focus:ring-indigo-500"
     >
 
-    <input
-      name="contrasenia"
-      type="password"
-      [(ngModel)]="contrasenia"
-      placeholder="Contraseña"
-      autocomplete="current-password"
-      required
-      class="border border-gray-300 px-3 py-3 rounded"
+    <!-- Contraseña -->
+    <input name="contrasenia" type="password" [(ngModel)]="contrasenia"
+      placeholder="Contraseña" autocomplete="current-password" required
+      class="border border-gray-300 px-3 py-3 rounded focus:outline-indigo-500 focus:ring-1 focus:ring-indigo-500"
     >
 
+    <!-- Error -->
     @if (error()) {
       <p class="text-red-600 text-sm">
         {{ error() }}
       </p>
     }
 
-    <button
-      type="submit"
-      [disabled]="cargando()"
-      class="py-3 bg-indigo-500 text-white font-medium rounded hover:bg-indigo-600 disabled:opacity-50"
+    <!-- Botón -->
+    <button type="submit" [disabled]="cargando()"
+      class="py-3 bg-indigo-500 text-white font-medium rounded hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
     >
       {{ cargando() ? 'Ingresando...' : 'Iniciar sesión' }}
     </button>
+
   </form>
 
+  <!-- Registro -->
   <p class="text-sm text-gray-500 mt-5">
-    ¿No tenés cuenta?
-    <a
-      routerLink="/signup"
-      class="text-indigo-500 hover:underline"
-    >
+    ¿Todavía no tenés cuenta?
+
+    <a routerLink="/signup" class="text-indigo-500 hover:underline font-medium">
       Registrate
     </a>
   </p>
+
 </div>
