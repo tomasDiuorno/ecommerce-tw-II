@@ -38,7 +38,8 @@ app.use(cors({
 }));
 app.use(express.json());
 
-//Config de cookie
+// Config de cookie
+// El Session Secret se usa para que la cookie no se pueda duplicar
 app.use(session({
     store: sessionStore,
     secret: SESSION_SECRET,

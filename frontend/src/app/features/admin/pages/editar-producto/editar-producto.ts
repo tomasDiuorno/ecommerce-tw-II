@@ -17,12 +17,12 @@ import { distinctUntilChanged, finalize, map, Subscription } from 'rxjs';
 import { EditarProductoFormulario } from '../../models/EditarProductoFormulario';
 import { CatalogoService } from '../../../catalogo/services/catalogo';
 import { ProductosAdminService } from '../../services/productos-admin-service';
-
+import { ProductoDatosForm } from '../../components/producto-datos-form/producto-datos-form';
 
 
 @Component({
   selector: 'app-editar-producto',
- imports: [FormField, RouterLink],
+ imports: [FormField, RouterLink, ProductoDatosForm],
   templateUrl: './editar-producto.html',
   styleUrl: './editar-producto.css',
 })
