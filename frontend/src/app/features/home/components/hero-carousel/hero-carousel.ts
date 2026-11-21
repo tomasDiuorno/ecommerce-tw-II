@@ -20,6 +20,17 @@ protected readonly slides = signal<Slide[]>([ {
     alt: 'Productos de tecnología',
     enlace: '/catalogo',
     boton: 'Ver catálogo',
+  },{
+    id: 2,
+    subtitulo: 'Componentes de PC',
+    titulo: 'Componentes para jugar al',
+    tituloResaltado: 'GTA VI',
+    descripcion: 'Comprá los mejores componentes para viciar todo el día',
+    imagen: '/carousel/slide-2.webp',
+    alt: 'Productos de tecnología',
+    enlace: '/catalogo',
+    boton: 'Ver componentes',
+    queryParams: { categoria: 4 },
   },]);
   protected readonly indice = signal(0);
 

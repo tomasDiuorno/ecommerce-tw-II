@@ -1,10 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { Navbar } from './shared/components/navbar/navbar';
 import { AuthService } from './features/auth/services/auth';
 
 @Component({
-  imports: [RouterOutlet, RouterLink, Navbar],
+  imports: [RouterOutlet, Navbar],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
