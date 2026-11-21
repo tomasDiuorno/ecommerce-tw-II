@@ -1,6 +1,5 @@
-
 import { validarCompra } from '../validators/compraValidator.js';
-import { registrarCompra } from '../repositories/compraRepositorio.js';
+import { obtenerComprasPorUsuario, registrarCompra } from '../repositories/compraRepositorio.js';
 
 export async function realizarCompra(
   usuarioId: number,
@@ -15,4 +14,8 @@ export async function realizarCompra(
   );
 
   return compra;
+}
+
+export async function listarComprasUsuario(usuarioId: number) {
+  return await obtenerComprasPorUsuario(usuarioId);
 }

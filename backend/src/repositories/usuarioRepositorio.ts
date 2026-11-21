@@ -75,3 +75,39 @@ export async function buscarUsuarioPorId(
 
   return resultado.rows[0] ?? null;
 }
+
+
+export async function actualizarUsuario(
+  id: number,
+  datos: {
+    email: string;
+    nombre: string;
+    apellido: string;
+    direccion: string;
+  }
+) {
+  const resultado = await pool.query(`
+    UPDATE usuarios
+    SET
+      email = $1,
+      nombre = $2,
+      apellido = $3,
+      direccion = $4
+    WHERE id = $5
+    RETURNING
+      id,
+      email,
+      nombre,
+      apellido,
+      direccion,
+      rol;
+  `, [
+    datos.email,
+    datos.nombre,
+    datos.apellido,
+    datos.direccion,
+    id
+  ]);
+
+  return resultado.rows[0] ?? null;
+}
