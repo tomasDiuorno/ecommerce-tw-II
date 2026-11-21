@@ -1,0 +1,196 @@
+<div class="perfil-container">
+    <header class="perfil-header">
+        <div>
+            <h1>Mi perfil</h1>
+            <p>Administrá tu información personal y consultá tus compras.</p>
+        </div>
+    </header>
+    <nav class="perfil-tabs">
+        <button type="button" [class.active]="seccionActiva() === 'datos'" (click)="cambiarSeccion('datos')">
+            Mis datos
+        </button>
+
+        <button type="button" [class.active]="seccionActiva() === 'compras'" (click)="cambiarSeccion('compras')">
+            Mis compras
+        </button>
+    </nav>
+    @if (seccionActiva() === 'datos') {
+    <section class="perfil-card">
+        <div class="section-header">
+            <div>
+                <h2>Datos personales</h2>
+                <p>Tu información de contacto y cuenta.</p>
+            </div>
+
+            @if (!editando()) {
+            <button type="button" class="btn-primary" (click)="habilitarEdicion()">
+                Editar perfil
+            </button>
+            }
+        </div>
+
+        @if (mensajeExito()) {
+        <div class="alert success">
+            {{ mensajeExito() }}
+        </div>
+        }
+
+        @if (errorPerfil()) {
+        <div class="alert error">
+            {{ errorPerfil() }}
+        </div>
+        }
+
+        <form [formGroup]="formulario" (ngSubmit)="guardarPerfil()">
+            <div class="form-grid">
+                <div class="form-field">
+                    <label for="nombre">Nombre</label>
+                    <input id="nombre" type="text" formControlName="nombre" [readonly]="!editando()">
+                    @if (formulario.controls.nombre.touched && formulario.controls.nombre.invalid)
+                    {
+                    <small class="field-error">
+                        El nombre debe tener al menos 2 caracteres.
+                    </small>
+                    }
+                </div>
+
+                <div class="form-field">
+                    <label for="apellido">Apellido</label>
+                    <input id="apellido" type="text" formControlName="apellido" [readonly]="!editando()">
+                    @if (formulario.controls.apellido.touched && formulario.controls.apellido.invalid)
+                    {
+                    <small class="field-error">
+                        El apellido debe tener al menos 2 caracteres.
+                    </small>
+                    }
+                </div>
+
+                <div class="form-field">
+                    <label for="email">Correo electrónico</label>
+                    <input id="email" type="email" formControlName="email" [readonly]="!editando()">
+                    @if (formulario.controls.email.touched && formulario.controls.email.invalid)
+                    {
+                    <small class="field-error">
+                        Ingresá un correo electrónico válido.
+                    </small>
+                    }
+                </div>
+
+                <div class="form-field full-width">
+                    <label for="direccion">Dirección</label>
+                    <input id="direccion" type="text" formControlName="direccion" [readonly]="!editando()">
+                    @if (formulario.controls.direccion.touched && formulario.controls.direccion.invalid)
+                    {
+                    <small class="field-error">
+                        La dirección es obligatoria.
+                    </small>
+                    }
+                </div>
+
+            </div>
+            @if (editando()) {
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" (click)="cancelarEdicion()" [disabled]="guardando()">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary" [disabled]="guardando()">
+                    @if (guardando()) {Guardando...}
+                    @else {Guardar cambios}
+                </button>
+            </div>
+            }
+        </form>
+    </section>
+    }
+
+    @if (seccionActiva() === 'compras') {
+    <section class="compras-section">
+        <div class="section-header">
+            <div>
+                <h2>Mis compras</h2>
+                <p>Consultá el historial de tus pedidos.</p>
+            </div>
+        </div>
+
+        @if (cargandoCompras()) {
+        <div class="empty-state">
+            <p>Cargando tus compras...</p>
+        </div>
+        } @else if (errorCompras()) {
+        <div class="alert error">
+            {{ errorCompras() }}
+            <button type="button" class="btn-secondary" (click)="cargarCompras()">
+                Reintentar
+            </button>
+        </div>
+        } @else if (compras().length === 0) {
+        <div class="empty-state">
+            <h3>Todavía no realizaste compras</h3>
+            <p>Cuando realices tu primer pedido, aparecerá en esta sección.</p>
+        </div>
+        } @else {
+
+        <div class="compras-list">
+            @for (compra of compras(); track compra.id) {
+            <article class="compra-card">
+                <div class="compra-header">
+                    <div>
+                        <span class="compra-label">Pedido</span>
+                        <h3>#{{ compra.id }}</h3>
+                    </div>
+                    <span class="estado">
+                        {{ compra.estado }}
+                    </span>
+                </div>
+
+                <div class="compra-info">
+                    <p>
+                        <strong>Fecha:</strong>
+                        {{ compra.fecha | date:'dd/MM/yyyy HH:mm' }}
+                    </p>
+                    <p>
+                        <strong>Dirección:</strong>
+                        {{ compra.direccion }}
+                    </p>
+                    <p>
+                        <strong>Código postal:</strong>
+                        {{ compra.codigoPostal }}
+                    </p>
+                </div>
+
+                <div class="productos-compra">
+                    <h4>Productos</h4>
+                    @for (item of compra.items; track item.productoId) {
+                    <div class="producto-item">
+                        <div>
+                            <strong>{{ item.nombreProducto }}</strong>
+                            <span>Cantidad: {{ item.cantidad }}</span>
+                        </div>
+                        <span>
+                            {{ +item.precioUnitario * item.cantidad | currency:'ARS':'symbol':'1.2-2':'es-AR' }}
+                        </span>
+                    </div>
+                    }
+                </div>
+
+                <div class="compra-totales">
+                    <div>
+                        <span>Subtotal</span>
+                        <span>{{ +compra.subtotal | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</span>
+                    </div>
+                    <div>
+                        <span>Costo de envío</span>
+                        <span>{{ +compra.costoEnvio | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</span>
+                    </div>
+                    <div class="total">
+                        <strong>Total</strong>
+                        <strong>{{ +compra.total | currency:'ARS':'symbol':'1.2-2':'es-AR' }}</strong>
+                    </div>
+                </div>
+            </article>
+            }
+        </div>
+        }
+    </section>
+    }
+</div>

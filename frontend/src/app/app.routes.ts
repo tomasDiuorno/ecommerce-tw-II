@@ -57,5 +57,13 @@ export const routes: Routes = [
         .then(m => m.adminRoutes),
     canActivate: [adminGuard],
     canActivateChild: [adminGuard]
+  },
+
+  {
+    path: 'perfil',
+    loadComponent: () =>
+      import('./features/perfil/pages/perfil/perfil')
+        .then(m => m.Perfil),
+    canActivate: [authGuard]
   }
 ];

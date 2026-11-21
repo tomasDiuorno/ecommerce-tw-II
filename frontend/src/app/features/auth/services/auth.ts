@@ -59,4 +59,8 @@ export class AuthService {
       })
     );
   }
+
+  actualizarUsuario(usuario: UsuarioAutenticado): void {
+    this.usuarioLogueado.set(usuario);
+  }
 }
