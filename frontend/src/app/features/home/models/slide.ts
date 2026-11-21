@@ -8,4 +8,5 @@ export interface Slide {
     boton: string;
     imagen: string;
     alt: string;
+    queryParams?: Record<string, number>
 }
