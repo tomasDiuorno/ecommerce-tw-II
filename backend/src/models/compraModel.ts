@@ -7,3 +7,22 @@ export interface SolicitudCompra {
     cantidad: number;
   }[];
 }
+
+export interface DetalleCompraHistorial {
+  productoId: number;
+  nombreProducto: string;
+  cantidad: number;
+  precioUnitario: string;
+}
+
+export interface CompraHistorial {
+  id: number;
+  fecha: Date | string;
+  direccion: string;
+  codigoPostal: string;
+  subtotal: string;
+  costoEnvio: string;
+  total: string;
+  estado: string;
+  items: DetalleCompraHistorial[];
+}

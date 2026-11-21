@@ -1,0 +1,311 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.perfil-container {
+    width: min(100% - 32px, 1000px);
+    margin: 40px auto;
+    color: #222;
+}
+
+.perfil-header {
+    margin-bottom: 28px;
+}
+
+.perfil-header h1 {
+    font-size: 30px;
+    margin: 0 0 8px;
+}
+
+.perfil-header p,
+.section-header p {
+    color: #777;
+    margin: 0;
+}
+
+.perfil-tabs {
+    display: flex;
+    gap: 12px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 24px;
+}
+
+.perfil-tabs button {
+    padding: 14px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    color: #777;
+    font-size: 15px;
+}
+
+.perfil-tabs button.active {
+    color: #222;
+    border-bottom-color: #7c3aed;
+    font-weight: 600;
+}
+
+.perfil-card,
+.compra-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 26px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 26px;
+}
+
+.section-header h2 {
+    margin: 0 0 7px;
+    font-size: 21px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-field label {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+.form-field input:focus {
+    outline: none;
+    border-color: #7c3aed;
+}
+
+.form-field input[readonly] {
+    background: #f7f7f7;
+    color: #666;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.field-error {
+    color: #dc2626;
+    font-size: 12px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 11px 18px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: #7c3aed;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #6d28d9;
+}
+
+.btn-secondary {
+    background: #eee;
+    color: #333;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.alert {
+    padding: 13px 16px;
+    border-radius: 7px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.alert.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.alert.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.compras-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.compra-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.compra-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 16px;
+}
+
+.compra-header h3 {
+    margin: 5px 0 0;
+    font-size: 20px;
+}
+
+.compra-label {
+    color: #888;
+    font-size: 12px;
+}
+
+.estado {
+    background: #ede9fe;
+    color: #6d28d9;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.compra-info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 20px;
+}
+
+.compra-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.productos-compra h4 {
+    margin: 0 0 14px;
+}
+
+.producto-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.producto-item div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.producto-item div span {
+    color: #888;
+    font-size: 13px;
+}
+
+.compra-totales {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 10px;
+}
+
+.compra-totales div {
+    display: flex;
+    justify-content: space-between;
+    color: #666;
+    font-size: 14px;
+}
+
+.compra-totales .total {
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+    color: #222;
+    font-size: 17px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 55px 20px;
+    background: #fff;
+    border: 1px dashed #ddd;
+    border-radius: 12px;
+}
+
+.empty-state h3 {
+    margin-top: 0;
+}
+
+.empty-state p {
+    color: #777;
+}
+
+@media (max-width: 650px) {
+    .perfil-container {
+        margin: 25px auto;
+    }
+
+    .perfil-card,
+    .compra-card {
+        padding: 18px;
+    }
+
+    .form-grid,
+    .compra-info {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+
+    .perfil-tabs button {
+        flex: 1;
+    }
+}

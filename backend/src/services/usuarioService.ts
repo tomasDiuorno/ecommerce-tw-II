@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import type { UsuarioDB } from "../models/usuarioModel.js";
-import { DatosRegistro } from "../models/dto/UsuarioDTO.js";
-import { buscarUsuarioPorEmail, buscarUsuarioPorId, crearUsuario } from "../repositories/usuarioRepositorio.js";
+import type { DatosRegistro, DatosUsuario } from "../models/dto/UsuarioDTO.js";
+import { actualizarUsuario, buscarUsuarioPorEmail, buscarUsuarioPorId, crearUsuario } from "../repositories/usuarioRepositorio.js";
 
 export type UsuarioPublico = Omit<UsuarioDB, "contraseniaHash">;
 
@@ -10,9 +10,9 @@ export class UsuarioService {
     if (!this.contraseniaEsValida(datos.contrasenia)) {
       throw new Error("CONTRASENIA_INVALIDA");
     }
-    
+
     const contraseniaHash = await bcrypt.hash(datos.contrasenia, 10);
-    
+
     const nuevoUsuario = await crearUsuario({
       email: datos.email,
       contraseniaHash,
@@ -26,12 +26,12 @@ export class UsuarioService {
     return usuarioPublico;
   }
 
-  async buscarPorId(id: number): Promise<UsuarioPublico | null>{
+  async buscarPorId(id: number): Promise<UsuarioPublico | null> {
     const usuario = await buscarUsuarioPorId(id);
-    if(!usuario){
+    if (!usuario) {
       return null;
     }
-    const {contraseniaHash: _, ...usuarioPublico} = usuario;
+    const { contraseniaHash: _, ...usuarioPublico } = usuario;
     return usuarioPublico;
   }
 
@@ -72,5 +72,12 @@ export class UsuarioService {
     const { contraseniaHash: _, ...usuarioPublico } = usuario;
 
     return usuarioPublico;
+  }
+
+  async actualizarPerfil(
+    id: number,
+    datos: DatosUsuario
+  ): Promise<UsuarioPublico | null> {
+    return await actualizarUsuario(id, datos);
   }
 }

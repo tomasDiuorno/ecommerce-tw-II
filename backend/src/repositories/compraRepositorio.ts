@@ -1,6 +1,7 @@
 
 import { pool } from '../config/database.js';
 import { HttpError } from '../middlewares/HttpError.js';
+import { CompraHistorial } from '../models/compraModel.js';
 import {
   calcularCostoEnvio,
   determinarZona
@@ -138,3 +139,46 @@ export async function registrarCompra(
     client.release();
   }
 }
+
+export async function obtenerComprasPorUsuario(
+  usuarioId: number
+): Promise<CompraHistorial[]> {
+
+  const resultado = await pool.query<CompraHistorial>(`
+    SELECT
+      c.id,
+      c.fecha,
+      c.direccion,
+      c.codigo_postal AS "codigoPostal",
+      c.subtotal,
+      c.costo_envio AS "costoEnvio",
+      c.total,
+      c.estado,
+
+      COALESCE(
+        JSON_AGG(
+          JSON_BUILD_OBJECT(
+            'productoId', dc.producto_id,
+            'nombreProducto', dc.nombre_producto,
+            'cantidad', dc.cantidad,
+            'precioUnitario', dc.precio_unitario::text
+          )
+        ) FILTER (WHERE dc.id IS NOT NULL),
+        '[]'::json
+      ) AS items
+
+    FROM compras c
+
+    LEFT JOIN detalle_compras dc
+      ON dc.compra_id = c.id
+
+    WHERE c.usuario_id = $1
+
+    GROUP BY c.id
+
+    ORDER BY c.fecha DESC, c.id DESC;
+  `, [usuarioId]);
+
+  return resultado.rows;
+}
+
