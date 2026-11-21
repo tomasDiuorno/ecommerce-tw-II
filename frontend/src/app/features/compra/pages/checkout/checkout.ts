@@ -1,11 +1,6 @@
 
 import { Component, inject, signal } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -89,8 +84,6 @@ export class Checkout {
     this.errorCompra.set(null);
     this.procesandoCompra.set(true);
 
-    // Solo enviamos datos del pedido.
-    // Los datos ficticios de tarjeta NO se envían.
     const solicitud = {
       direccion,
       codigoPostal,
@@ -104,28 +97,20 @@ export class Checkout {
     this.compraService.realizarCompra(solicitud).subscribe({
       next: respuesta => {
         console.log('Compra registrada:', respuesta);
-
-        // Vaciar el carrito solamente si la compra fue exitosa.
         this.carritoService.vaciarCarrito();
-
-        // Más adelante mostraremos una pantalla de confirmación.
-        // Por ahora mostramos el resultado sin navegar.
         this.errorCompra.set(null);
         this.procesandoCompra.set(false);
-
-       this.router.navigate(['/compra-exitosa'], {
-  state: {
-    compra: respuesta.compra
-  }
-});
+        this.router.navigate(['/compra-exitosa'], {
+          state: {
+            compra: respuesta.compra
+          }
+        });
       },
-
       error: (error: HttpErrorResponse) => {
         this.errorCompra.set(
           error.error?.mensaje ||
           'No se pudo realizar la compra. Intentá nuevamente.'
         );
-
         this.procesandoCompra.set(false);
       }
     });

@@ -9,8 +9,7 @@ export const authGuard: CanActivateFn = (_route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Si todavía no terminó de comprobarse la sesión,
-  // esperamos a que finalice la consulta a /me.
+  // Si todavía no terminó de comprobarse la sesión, esperamos a que finalice la consulta a /me
   if (!authService.sesionCargada()) {
     return toObservable(authService.sesionCargada).pipe(
       filter(cargada => cargada),
