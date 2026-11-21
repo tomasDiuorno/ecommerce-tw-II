@@ -166,7 +166,6 @@ export async function actualizarPerfil(req: Request, res: Response) {
     });
 
   } catch (error) {
-    // PostgreSQL: violación de la restricción UNIQUE del email.
     if (typeof error === "object" && error !== null && "code" in error && error.code === "23505") {
       return res.status(409).json({
         mensaje: "El email ya está registrado por otro usuario"

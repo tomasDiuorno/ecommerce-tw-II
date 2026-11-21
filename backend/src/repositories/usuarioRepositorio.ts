@@ -24,7 +24,6 @@ export async function buscarUsuarioPorEmail(
   return resultado.rows[0] ?? null;
 }
 
-// Registrar un usuario
 export async function crearUsuario(
   usuario: Omit<UsuarioDB, 'id' | 'rol'>
 ): Promise<UsuarioDB> {
