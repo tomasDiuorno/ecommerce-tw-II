@@ -15,7 +15,7 @@ import {
 } from '../../forms/producto.schemas';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-
+import { ProductoDatosForm } from '../../components/producto-datos-form/producto-datos-form';
 import { CatalogoService } from '../../../catalogo/services/catalogo';
 import { ProductosAdminService } from '../../services/productos-admin-service';
 
@@ -32,7 +32,7 @@ interface ProductoFormulario {
 
 @Component({
   selector: 'app-crear-producto',
-  imports: [FormField, RouterLink],
+  imports: [FormField, RouterLink, ProductoDatosForm],
   templateUrl: './crear-producto.html',
   styleUrl: './crear-producto.css',
 })
